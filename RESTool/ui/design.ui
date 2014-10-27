@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>457</width>
-    <height>395</height>
+    <width>444</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,19 +29,22 @@
         <item row="1" column="0">
          <widget class="QLabel" name="label_chrome_file">
           <property name="text">
-           <string>Chrome file:</string>
+           <string>Chrome RES found:</string>
           </property>
          </widget>
         </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_firefox_file">
           <property name="text">
-           <string>Firefox file:</string>
+           <string>Firefox RES found:</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
          <widget class="QLabel" name="lbl_os">
+          <property name="toolTip">
+           <string>Shows OS info</string>
+          </property>
           <property name="text">
            <string>Not detected</string>
           </property>
@@ -49,6 +52,9 @@
         </item>
         <item row="1" column="1">
          <widget class="QLabel" name="lbl_chrome">
+          <property name="toolTip">
+           <string>Indicates whether the app was able to find the RES settings file in the default locations on your operating system for this browser.</string>
+          </property>
           <property name="text">
            <string>Not found!</string>
           </property>
@@ -56,8 +62,31 @@
         </item>
         <item row="2" column="1">
          <widget class="QLabel" name="lbl_firefox">
+          <property name="toolTip">
+           <string>Indicates whether the app was able to find the RES settings file in the default locations on your operating system for this browser.</string>
+          </property>
           <property name="text">
            <string>Not found!</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_firefox_profile">
+          <property name="toolTip">
+           <string>User profile to use for applying changes, if more than one exists. If you don't use multiple profiles then the default/only one will be used.</string>
+          </property>
+          <property name="text">
+           <string>Firefox profile:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="cbo_ff_profile">
+          <property name="toolTip">
+           <string>User profile to use for applying changes, if more than one exists. If you don't use multiple profiles then the default/only one will be used.</string>
+          </property>
+          <property name="currentIndex">
+           <number>-1</number>
           </property>
          </widget>
         </item>
@@ -180,7 +209,7 @@
       <item>
        <layout class="QHBoxLayout" name="layout_donations">
         <item>
-         <widget class="QPushButton" name="btn_donate_app">
+         <widget class="QPushButton" name="btn_paypal_pay">
           <property name="font">
            <font>
             <weight>75</weight>
@@ -188,10 +217,10 @@
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Make a paypal donation to author of this application! (Thanks!)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Checkout using paypal to support further application development&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Donate to author</string>
+           <string>Pay for RESTool</string>
           </property>
           <property name="autoRepeat">
            <bool>false</bool>
@@ -199,22 +228,59 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btn_donate_res">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
+         <widget class="QComboBox" name="cb_paypal_option">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Opens a website with info on how you can donate to RES itself.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount you wish to pay for this software.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-          <property name="text">
-           <string>Donate to RES</string>
+          <property name="currentIndex">
+           <number>1</number>
           </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
+          </property>
+          <property name="frame">
+           <bool>false</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>$1.99</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>$4.99</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>$9.99</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btn_donate_res">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Opens a website with info on how you can donate to RES itself.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Donate to RES</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -242,6 +308,9 @@
           <height>16777215</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>List will all backupfiles available to use in this application.</string>
+        </property>
        </widget>
       </item>
       <item>
@@ -265,8 +334,11 @@
        <layout class="QHBoxLayout" name="layout_website">
         <item>
          <widget class="QLabel" name="label_website">
+          <property name="toolTip">
+           <string>Open github.com/nikola-k/RESTool in your default browser</string>
+          </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://www.google.com&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Visit github page&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/nikola-k/RESTool&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Visit github page&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
