@@ -412,6 +412,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         try:
             filename = str(self.list_backups.selectedItems()[0].text())
         except IndexError:
+            self._warn("No backup selected from the list to restore.")
             log.error("No file selected to restore from")
             return
 
@@ -440,6 +441,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         try:
             filename = str(self.list_backups.selectedItems()[0].text())
         except IndexError:
+            self._warn("No backup selected from the list to restore.")
             log.error("No file selected to restore from")
             return
 
