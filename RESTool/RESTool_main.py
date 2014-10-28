@@ -342,11 +342,12 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         ff_data = [(key, value) for key, value in ff_json.items()]
         log.debug("ff data elements {}".format(len(ff_data)))
+        log.debug("Dropping table...")
+        c.execute("DROP TABLE IF EXISTS ItemTable;")
+        log.debug("Creating table...")
+        c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
         log.debug("Inserting new data...")
         c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
-        log.debug("Updating new data...")
-        for data in ff_data:
-            c.execute('UPDATE ItemTable SET value=? WHERE  key=?', (data[1], data[0]))
         log.debug("Commiting changes...")
         conn.commit()
         c.close()
