@@ -44,13 +44,13 @@ setup(
             'RESTool = RESTool.RESTool_main:main',
         ],
     },
-    console=['RESTool/RESTool_main.py'],
+    windows=['RESTool/RESTool_main.py'],
     options={"py2exe":{
             "dll_excludes": ["MSVCP90.dll", "HID.DLL", "w9xpopen.exe"],
             'bundle_files': 1,
             "includes":["sip"],
-            "compressed": 2,
-            "optimize":1,
+            "compressed": 1,
+            "optimize": 1,
         }
     },
     include_package_data=True,
