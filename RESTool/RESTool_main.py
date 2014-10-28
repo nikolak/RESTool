@@ -40,7 +40,7 @@ except ImportError:
 
 err = sys.stderr
 out = sys.stdout
-sys.stderr = out #disable stderr so that py2exe doesn't show that popup message
+sys.stderr = out  # disable stderr so that py2exe doesn't show that popup message
 
 log = logging.getLogger('RESToolGUI')
 
@@ -130,6 +130,46 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             log.error("Got empty checkout page... {}".format(checkout_page))
         pass
 
+    def _expand(self, path):
+        log.debug("Expanding: %s" % path)
+        if self.os == "linux":
+            return os.path.expanduser(path)
+        elif self.os == "windows":
+            return os.path.expandvars(path)
+        else:
+            log.error("Unsupported OS. Expanding failed.")
+            return None
+
+    # noinspection PyCallByClass,PyTypeChecker
+    def _warn(self, msg, title="Warnning"):
+        QtGui.QMessageBox.warning(self, title, msg,
+                                  QtGui.QMessageBox.Ok)
+
+    # noinspection PyCallByClass,PyTypeChecker
+    def _info(self, msg, title="Info"):
+        QtGui.QMessageBox.information(self, title, msg,
+                                  QtGui.QMessageBox.Ok)
+
+    # noinspection PyCallByClass,PyTypeChecker
+    def _prompt(self, msg, title="Prompt"):
+        result = QtGui.QMessageBox.question(self, title, msg,
+                                  QtGui.QMessageBox.Cancel, QtGui.QMessageBox.No,
+                                  QtGui.QMessageBox.Yes)
+
+        if result == QtGui.QMessageBox.Cancel:
+            return False
+        elif result == QtGui.QMessageBox.No:
+            return False
+        elif result == QtGui.QMessageBox.Yes:
+            return True
+        else:
+            log.debug("Returned unknown value from _prompt, %s" %result)
+            return False
+
+    # noinspection PyCallByClass,PyTypeChecker
+    def _critical(self, msg, title="Error"):
+        QtGui.QMessageBox.critical(self, title, msg, QtGui.QMessageBox.Ok)
+
     def update_ui(self):
         self.lbl_firefox.setText(str(bool(self.firefox_path)))
         self.lbl_chrome.setText(str(bool(self.chrome_path)))
@@ -154,16 +194,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
     def change_profile(self):
         self.firefox_path = self.get_firefox_path()
-
-    def _expand(self, path):
-        log.debug("Expanding: %s" % path)
-        if self.os == "linux":
-            return os.path.expanduser(path)
-        elif self.os == "windows":
-            return os.path.expandvars(path)
-        else:
-            log.error("Unsupported OS. Expanding failed.")
-            return None
 
     def get_chrome_path(self):
         log.debug("Getting chrome path")
