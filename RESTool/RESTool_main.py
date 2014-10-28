@@ -38,15 +38,18 @@ try:
 except ImportError:
     import restoolgui
 
-err = sys.stderr
-out = sys.stdout
-sys.stderr = out  # disable stderr so that py2exe doesn't show that popup message
+DEBUG = os.path.exists("log.txt")
+
+
+
+if not DEBUG:
+    err = sys.stderr
+    out = sys.stdout
+    sys.stderr = out  # disable stderr so that py2exe doesn't show that popup message
 
 log = logging.getLogger('RESToolGUI')
 
-if os.path.exists("log.txt"):
-    sys.stderr = err
-    sys.stdout = out
+if DEBUG:
     log.setLevel(logging.DEBUG)
     fh = logging.FileHandler('log.txt')
     fh.setLevel(logging.DEBUG)
@@ -309,17 +312,23 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             log.debug("Firefox %s ; Chrome %s" % (firefox_path, chrome_path))
             return
 
-        log.debug("Connecting database. %s" % chrome_path)
-        con = sqlite3.connect(chrome_path)
-        c = con.cursor()
-        log.debug("Getting database data...")
-        db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
-        log.debug("Opening firefox file...")
-        with codecs.open(firefox_path, 'w', 'utf-8') as firefox_out:
-            dump = json.dumps(dict(db))
-            log.debug("Writing to firefox file...")
-            firefox_out.write(dump)
+        try:
+            log.debug("Connecting database. %s" % chrome_path)
+            con = sqlite3.connect(chrome_path)
+            c = con.cursor()
+            log.debug("Getting database data...")
+            db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
+            log.debug("Opening firefox file...")
+            with codecs.open(firefox_path, 'w', 'utf-8') as firefox_out:
+                dump = json.dumps(dict(db))
+                log.debug("Writing to firefox file...")
+                firefox_out.write(dump)
+        except:
+            self._warn("Migrating settings failed!")
+            if DEBUG:raise
+            return
 
+        self._info("Migrating settings from Chrome to Firefox complete!")
         log.info("Chrome to firefox done!")
 
     def firefox_to_chrome(self, chrome_path=None, firefox_path=None):
@@ -332,26 +341,33 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             log.debug("Firefox %s ; Chrome %s" % (firefox_path, chrome_path))
             return
 
-        log.debug("Connecting database...")
-        conn = sqlite3.connect(chrome_path)
-        c = conn.cursor()
-        log.debug("Opening firefox file...")
-        with codecs.open(firefox_path, "r", "utf-8") as firefox_in:
-            log.debug("Getting database data...")
-            ff_json = json.load(firefox_in)
+        try:
+            log.debug("Connecting database...")
+            conn = sqlite3.connect(chrome_path)
+            c = conn.cursor()
+            log.debug("Opening firefox file...")
+            with codecs.open(firefox_path, "r", "utf-8") as firefox_in:
+                log.debug("Getting database data...")
+                ff_json = json.load(firefox_in)
 
-        ff_data = [(key, value) for key, value in ff_json.items()]
-        log.debug("ff data elements {}".format(len(ff_data)))
-        log.debug("Dropping table...")
-        c.execute("DROP TABLE IF EXISTS ItemTable;")
-        log.debug("Creating table...")
-        c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
-        log.debug("Inserting new data...")
-        c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
-        log.debug("Commiting changes...")
-        conn.commit()
-        c.close()
+            ff_data = [(key, value) for key, value in ff_json.items()]
+            log.debug("ff data elements {}".format(len(ff_data)))
+            log.debug("Dropping table...")
+            c.execute("DROP TABLE IF EXISTS ItemTable;")
+            log.debug("Creating table...")
+            c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
+            log.debug("Inserting new data...")
+            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
+            log.debug("Commiting changes...")
+            conn.commit()
+            c.close()
+        except:
+            self._warn("Migrating settings failed!")
+            if DEBUG:raise
+            return
+
         log.info("Firefox to chrome done!")
+        self._info("Migrating settings from firefox to Chrome complete!")
 
     def backup_file(self, path, fname):
         if not os.path.exists(path):
@@ -378,12 +394,18 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     def backup_chrome(self):
         if self.chrome_path:
             fname = "chrome.{}.backup".format(strftime("%Y-%m-%d"))
-            self.backup_file(self.chrome_path, fname)
+            if self.backup_file(self.chrome_path, fname):
+                self._info("Chrome backup successfully created!")
+            else:
+                self._warn("Chrome backup failed!")
 
     def backup_firefox(self):
         if self.firefox_path:
             fname = "firefox.{}.backup".format(strftime("%Y-%m-%d"))
-            self.backup_file(self.firefox_path, fname)
+            if self.backup_file(self.firefox_path, fname):
+                self._info("Firefox backup successfully created!")
+            else:
+                self._warn("Firefox backup failed!")
 
     def restore_chrome(self):
         log.debug("Restoring chrome")
@@ -399,13 +421,19 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             return
         browser = filename.split('.')[0]
 
-        if browser == "firefox":
-            self.firefox_to_chrome(firefox_path=full_path)
-        elif browser == "chrome":
-            shutil.copy(full_path, self.chrome_path)
-        else:
-            log.error("Unknown browser: %s" % browser)
-
+        try:
+            if browser == "firefox":
+                self.firefox_to_chrome(firefox_path=full_path)
+                self._info("Chrome restored from firefox backup")
+            elif browser == "chrome":
+                shutil.copy(full_path, self.chrome_path)
+                self._info("Chrome restored from backup")
+            else:
+                self._warn("Restore aborted. Unknown backup format")
+                log.error("Unknown browser: %s" % browser)
+        except:
+            self._warn("Restoring Chrome failed!")
+            if DEBUG:raise
 
     def restore_firefox(self):
         log.debug("Restoring firefox")
@@ -420,13 +448,19 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             log.error("File not found at %s " % full_path)
             return
         browser = filename.split('.')[0]
-
-        if browser == "chrome":
-            self.chrome_to_firefox(chrome_path=full_path)
-        elif browser == "firefox":
-            shutil.copy(full_path, self.firefox_path)
-        else:
-            log.error("Unknown browser: %s" % browser)
+        try:
+            if browser == "chrome":
+                self.chrome_to_firefox(chrome_path=full_path)
+                self._info("Firefox restored from Chrome backup")
+            elif browser == "firefox":
+                shutil.copy(full_path, self.firefox_path)
+                self._info("Firefox restored")
+            else:
+                self._warn("Restore aborted. Unknown backup format")
+                log.error("Unknown browser: %s" % browser)
+        except:
+            self._warn("Restoring Firefox failed!")
+            if DEBUG:raise
 
     def delete_backup_file(self):
         try:
