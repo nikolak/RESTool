@@ -62,17 +62,17 @@ which you probably already have installed, but if you can not get the app to run
 try installing visual c++ 2008 redistributable from the link above.
 
 
-+--------------------+-------------+--------------------------+
-| Description        | Link        | Note                     |
-+====================+=============+==========================+
-| Pay $1.99 (PayPal) | paypal1_    | Use same link as         |
-+--------------------+-------------+ free download            |
-| Pay $4.99 (PayPal) | paypal2_    | for actually downloading |
-+--------------------+-------------+ the software exe         |
-| Pay $9.99 (PayPal) | paypal3_    |                          |
-+--------------------+-------------+--------------------------+
-| Free download      | releases_   |  (Windows exe only)      |
-+--------------------+-------------+--------------------------+
++--------------------+-------------+------------------------------+
+| Description        | Link        | Note                         |
++====================+=============+==============================+
+| Pay $1.99 (PayPal) | paypal1_    | Use same link as             |
++--------------------+-------------+ free download                |
+| Pay $4.99 (PayPal) | paypal2_    | for actually downloading     |
++--------------------+-------------+ the software                 |
+| Pay $9.99 (PayPal) | paypal3_    |                              |
++--------------------+-------------+------------------------------+
+| Free download      | releases_   |  (Windows exe, linux source) |
++--------------------+-------------+------------------------------+
 
 
 .. _paypal1: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QL25GUJ62G6UL
