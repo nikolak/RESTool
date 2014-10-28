@@ -33,11 +33,20 @@ import logging
 import shutil
 from time import strftime
 
-from RESTool import restoolgui
+try:
+    from RESTool import restoolgui
+except ImportError:
+    import restoolgui
 
+err = sys.stderr
+out = sys.stdout
+sys.stderr = out #disable stderr so that py2exe doesn't show that popup message
 
 log = logging.getLogger('RESToolGUI')
+
 if os.path.exists("log.txt"):
+    sys.stderr = err
+    sys.stdout = out
     log.setLevel(logging.DEBUG)
     fh = logging.FileHandler('log.txt')
     fh.setLevel(logging.DEBUG)
@@ -197,7 +206,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             if platform.release() == "XP":
                 log.error("Unsupported OS (Windows XP). Returning None")
                 return None
-            profiles_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\Profiles\\")
+            profiles_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
         else:
             log.error("Unsupported OS. Returning None")
             return None
@@ -241,7 +250,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             if platform.release() == "XP":
                 log.error("Unsupported OS (Windows XP). Returning None")
                 return None
-            folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\Profiles\\")
+            folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
         else:
             log.error("Unsupported OS. Returning None")
             return None
