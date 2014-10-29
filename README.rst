@@ -35,7 +35,7 @@ Features
 
 * Restore settings into a different browser
 
-* Cross platform (linux and windows only at the moment)
+* Cross platform (Linux and Windows only at the moment)
 
 * Simple to use GUI (see screenshot below)
 
@@ -51,7 +51,7 @@ Linux xubuntu 14.04:
 Downloads
 =========
 
-You can pay for this software if you want, this helps fund the development
+You can pay for this software if you want; this helps fund the development
 but it is not required for using all available features. See FAQs_ for more info.
 
 Windows
@@ -88,7 +88,7 @@ Windows Vista and up are supported. Tested on Windows 7 32bit.
 Linux
 -----
 
-There is no binary provided for linux but the only requirements are python 2.7 and pyqt, both of which
+There is no binary provided for linux but the only requirements are Python 2.7 and pyqt, both of which
 are available in most distro repos. You can run the application, after installing pyqt, by simply downloading
 the source and running `RESTool_main.py` from your command line.
 
@@ -102,14 +102,14 @@ This section gives short description of every feature available:
 Firefox profile
 ---------------
 
-Firefox supports multiple profiles, you can pick (if you have more than one) which profile to use for
+Firefox supports multiple profiles; you can pick (if you have more than one) which profile to use for
 the other features.
 
 Chrome to Firefox
 -----------------
 
-Copies data from firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
-so if you make a change be sure to close firefox before using this feature to ensure that all settings are
+Copies data from Firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
+so if you make a change be sure to close Firefox before using this feature to ensure that all settings are
 properly transferred.
 
 Firefox to Chrome
@@ -138,19 +138,19 @@ Restore selected backup to Chrome
 
 Restores the currently selected backup file in the list on the right to Chrome RES settings.
 
-The backup file can be either backup created either using "Backup Chrome" or "Backup Fireofx" feature.
+The backup file can be either backup created either using "Backup Chrome" or "Backup Firefox" feature.
 
 Restore selected backup to Firefox
 ----------------------------------
 
 Restores the currently selected backup file in the list on the right to Chrome RES settings.
 
-The backup file can be either backup created either using "Backup Chrome" or "Backup Fireofx" feature.
+The backup file can be either backup created either using "Backup Chrome" or "Backup Firefox" feature.
 
 Pay for RESTool
 ---------------
 
-Opens a paypal link to pay the amount picked in the dropbox on the right. See FAQs_ for more info about
+Opens a PayPal link to pay the amount picked in the dropbox on the right. See FAQs_ for more info about
 paid vs free option.
 
 Donate to RES
@@ -181,7 +181,7 @@ on github, sending an email or contacting the author some other way.
 
 You can upload the log file to pastebin.com, for example, if it's long.
 
-If you're running OSX or Windows XP (or older) or browsers other than Firefox and Chrome
+If you're running OS X or Windows XP (or older) or browsers other than Firefox and Chrome
 those operating systems and browsers are not supported so I can not guarantee that the issue you're having
 will be fixed.
 
@@ -208,6 +208,6 @@ Q: Why isn't OSX and/or [your favorite browser] supported?
 ----------------------------------------------------------
 
 A: I simply do not use them and no OS data is available for RES usage so I just picked two OS that I use and two
-most popular browsers(Firefox and Chrome). If there is enough interest and support for the application regarding
+most popular browsers (Firefox and Chrome). If there is enough interest and support for the application regarding
 adding more browsers and/or OS it will be added.
 (Browsers that are not officially supported by RES will not be added)
