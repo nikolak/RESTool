@@ -108,14 +108,14 @@ the other features.
 Chrome to Firefox
 -----------------
 
-Copies data from Firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
+Copies data from Chrome RES settings file into Firefox settings. Changes to settings are saved when the browser closes
 so if you make a change be sure to close Chrome before using this feature to ensure that all settings are
 properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
 
 Firefox to Chrome
 -----------------
 
-Copies data from Chrome RES settings file into Firefox file. Changes to settings are saved when the browser closes
+Copies data from Firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
 so if you make a change be sure to close Firefox before using this feature to ensure that all settings are
 properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
 
