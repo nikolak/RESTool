@@ -98,3 +98,13 @@ target/
 # KDE directory preferences
 .directory
 
+# RESTool releases directory
+releases/
+
+# RESTool logs
+log.txt
+
+#backups while testing
+RESTool/res_backups
+*.exe
+
