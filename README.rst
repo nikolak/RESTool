@@ -108,16 +108,28 @@ the other features.
 Chrome to Firefox
 -----------------
 
+<<<<<<< Updated upstream
 Copies data from Chrome RES settings file into Firefox settings. Changes to settings are saved when the browser closes
 so if you make a change be sure to close Chrome before using this feature to ensure that all settings are
 properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
+=======
+Replaces your Firefox RES settings with settings from Chrome RES. RES has to be installed in both browsers for this feature to work.
+
+**Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
+>>>>>>> Stashed changes
 
 Firefox to Chrome
 -----------------
 
+<<<<<<< Updated upstream
 Copies data from Firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
 so if you make a change be sure to close Firefox before using this feature to ensure that all settings are
 properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
+=======
+Replaces your Chrome RES settings with settings from Firefox RES.  RES has to be installed in both browsers for this feature to work.
+
+**Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
+>>>>>>> Stashed changes
 
 Backup Chrome
 -------------
@@ -185,6 +197,8 @@ If you're running OS X or Windows XP (or older) or browsers other than Firefox a
 those operating systems and browsers are not supported so I can not guarantee that the issue you're having
 will be fixed.
 
+**Important:** As of version 0.2.0 the log file *may* contain some personal data, or even passwords (if they are saved using RES) you should remove any personal data you're not comfortable with sharing from the log file before submitting it.
+
 
 FAQs
 ====
@@ -211,3 +225,8 @@ A: I simply do not use them and no OS data is available for RES usage so I just 
 most popular browsers (Firefox and Chrome). If there is enough interest and support for the application regarding
 adding more browsers and/or OS it will be added.
 (Browsers that are not officially supported by RES will not be added)
+
+Q: Option ____ failed. What now?
+--------------------------------
+
+See the Help_ section on how to make the application log all the relevant data to a log file which you can then send to author to troubleshoot and fix the issue
