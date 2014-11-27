@@ -47,6 +47,11 @@ Linux xubuntu 14.04:
 
 .. image :: docs/0.1.0dev_linux.png
 
+Windows 7:
+----------
+
+.. image :: docs/0.1.0windows.PNG
+
 
 Downloads
 =========
@@ -108,28 +113,16 @@ the other features.
 Chrome to Firefox
 -----------------
 
-<<<<<<< Updated upstream
-Copies data from Chrome RES settings file into Firefox settings. Changes to settings are saved when the browser closes
-so if you make a change be sure to close Chrome before using this feature to ensure that all settings are
-properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
-=======
 Replaces your Firefox RES settings with settings from Chrome RES. RES has to be installed in both browsers for this feature to work.
 
 **Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
->>>>>>> Stashed changes
 
 Firefox to Chrome
 -----------------
 
-<<<<<<< Updated upstream
-Copies data from Firefox RES settings file into Chrome file. Changes to settings are saved when the browser closes
-so if you make a change be sure to close Firefox before using this feature to ensure that all settings are
-properly transferred. It's recommended to have both browsers closed to avoid any accidental data corruption.
-=======
 Replaces your Chrome RES settings with settings from Firefox RES.  RES has to be installed in both browsers for this feature to work.
 
 **Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
->>>>>>> Stashed changes
 
 Backup Chrome
 -------------
