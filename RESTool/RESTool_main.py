@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright 2014 Nikola Kovacevic <nikolak@outlook.com
+# Copyright 2014 Nikola Kovacevic <nikolak@outlook.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 
 __author__ = 'Nikola Kovacevic'
 __email__ = 'nikolak@outlook.com'
-__version__ = '0.1.0'
+__version__ = '0.2.0dev'
 
 import os
 import ConfigParser
@@ -40,8 +40,6 @@ except ImportError:
 
 DEBUG = os.path.exists("log.txt")
 
-
-
 if not DEBUG:
     err = sys.stderr
     out = sys.stdout
@@ -63,9 +61,9 @@ if DEBUG:
     log.addHandler(fh)
 
 
-def exception_hook(type, value, tback):
-    log.exception("".join(traceback.format_exception(type, value, tback)))
-    sys.__excepthook__(type, value, tback)
+def exception_hook(e_type, e_value, e_tback):
+    log.exception("".join(traceback.format_exception(e_type, e_value, e_tback)))
+    sys.__excepthook__(e_type, e_value, e_tback)
 
 
 sys.excepthook = exception_hook
@@ -79,29 +77,736 @@ PAYPAL_PAYMENT_OPTIONS = {
     "$9.99": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BXPXJB2QUDSY2"}
 
 
+class Chrome(object):
+    def __init__(self):
+        log.debug("Starting chrome initialization")
+        self.os = platform.system().lower()
+
+        self.path = None
+        self.path = self._find_res()
+        self.res_exists = self.path is not None
+        pass
+
+    def _expand(self, path):
+        log.debug("Chrome expanding: {}".format(path))
+
+        if self.os == "linux":
+            return os.path.expanduser(path)
+        elif self.os == "windows" and platform.release() != "XP":
+            return os.path.expandvars(path)
+        else:
+            log.error("Unsupported OS: {} - expanding failed.".format(self.os))
+            return None
+
+    def _find_res(self):
+        log.debug("Finding Chrome RES")
+
+        # res_folder = None
+        res_file = "chrome-extension_kbmfpngjjgdllneeigpgjifpgocmfgmb_0.localstorage"
+
+        if self.os == 'linux':
+            res_folder = self._expand("~/.config/google-chrome/Default/Local Storage/")
+
+        elif self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            # todo: Check if it's possible for folder to be in %APPDATA% instead
+            res_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Local Storage\\")
+
+        else:
+            log.error("Unsupported OS. Returning None")
+            return None
+
+        log.debug("Chrome res_folder set to : {}".format(res_folder))
+
+        if not os.path.exists(res_folder):
+            log.error("Selected chrome folder does not exist")
+            return None
+
+        try:
+            full_path = os.path.join(res_folder, res_file)
+            log.debug("Full chrome path set to {}".format(full_path))
+
+            if os.path.exists(full_path):
+                log.debug("Full chrome path exists")
+                return full_path
+            else:
+                log.warn("Full chrome path does not exist. RES Not installed?")
+                return None
+
+        except AttributeError:
+            log.warn("Chrome joining failed for {} and {}".format(res_folder, res_file))
+            return None
+        except:
+            if DEBUG:
+                raise
+            else:
+                return None
+
+    def _backup_file(self, path, fname):
+        log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
+        if not os.path.exists(path):
+            log.eror("Path not found {}".format(path))
+            return False
+
+        if not os.path.exists("res_backups"):
+            try:
+                os.makedirs("res_backups")
+            except IOError:
+                log.error("IOError encountered while trying to create res_backups folder. Aborting.")
+                return False
+            except Exception as e:
+                log.error("Exception occurred while trying to create res_bacups folder.")
+                log.exception("Exception: {}".format(repr(e)))
+                return False
+
+        destination = os.path.join("res_backups", fname)
+        log.debug("Source and destination exist. Trying to copy {} to {}".format(path, destination))
+        try:
+            shutil.copy(path, destination)
+            # TODO: self.update_backup_list()
+            return True
+        except IOError:
+            log.error("Copy failed due to IOError")
+            return False
+        except:
+            if DEBUG:
+                raise
+            else:
+                return False
+
+    def get_data(self, chrome_path=None):
+        log.debug("Chrome get data")
+
+        if not chrome_path:
+            chrome_path = self.path
+
+        if chrome_path is None:
+            log.error("Chrome path invalid")
+            return None
+
+        log.debug("Chrome path set to: {}".format(chrome_path))
+
+        if not os.path.exists(chrome_path):
+            log.debug("chrome_path refers to an invalid location")
+            return None
+
+        try:
+            log.debug("Connecting to database.")
+            con = sqlite3.connect(chrome_path)
+            c = con.cursor()
+            log.debug("Executing SELECT query")
+            db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
+            # todo: do some data verifying
+            if not db:
+                log.debug("SELECT query returned no data. Aborting.")
+                return None
+            else:
+                log.debug("SELECT query returned data.")
+
+            log.debug("Creating dict dump")
+            chrome_data = json.dumps(dict(db))
+
+            log.info("Returning chrome data!")
+            return chrome_data
+        except:
+            log.debug("Exception when converting data from chrome to firefox")
+            if DEBUG:
+                raise
+            else:
+                return None
+
+
+    def set_data(self, json_data):
+        log.info("Chrome setting data")
+        if not json_data:
+            log.debug("json_data empty, aborting.")
+            # todo: verify json_data is valid RES data
+            return False
+
+        try:
+            log.debug("Connecting to database...")
+            conn = sqlite3.connect(self.path)
+            c = conn.cursor()
+            # todo fetchone to verify it's a valid RES database
+
+            log.debug("Generating list of key, value tuples")
+            ff_data = [(key, value) for key, value in json_data.items()]
+            log.debug("Tuples generated. Count: {}".format(len(ff_data)))
+
+            log.debug("Executing DROP TABLE")
+            c.execute("DROP TABLE ItemTable;")
+
+            log.debug("Dropping table done. Executing CREATE TABLE")
+            c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
+
+            log.debug("Creating table done. Inserting data from json_data into the database")
+            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
+            # fixme: 'OR IGNORE' needed?
+
+            log.debug("Inserting data done. Committing changes")
+            conn.commit()
+            log.debug("Changes committed. Closing database")
+            c.close()
+            log.info("Setting chrome data complete!")
+            return True
+        except:
+            log.debug("Exception when converting data from firefox to chrome")
+            if DEBUG:
+                raise
+            else:
+                return False
+
+    def backup(self):
+        if self.path:
+            fname = "chrome.{}.backup".format(strftime("%Y-%m-%d"))
+            try:
+                return self._backup_file(self.path, fname)
+            except:
+                if DEBUG:
+                    raise
+                else:
+                    return False
+        else:
+            return False
+
+
+class Firefox(object):
+    def __init__(self):
+        log.info("Firefox initialization starting")
+        self.os = platform.system().lower()
+        self.path = None
+        self.profile = None
+        self.available_profiles = {}
+
+        self.available_profiles = self._get_profiles()
+        self.path = self._find_res()
+
+        self.res_exists = self.path is not None
+
+    def _expand(self, path):
+        log.debug("Chrome expanding: {}".format(path))
+
+        if self.os == "linux":
+            return os.path.expanduser(path)
+        elif self.os == "windows" and platform.release() != "XP":
+            return os.path.expandvars(path)
+        else:
+            log.error("Unsupported OS: {} - expanding failed.".format(self.os))
+            return None
+
+    def _find_res(self):
+        log.info("Firefox finding RES")
+
+        if not self.available_profiles:
+            log.debug("Profiles not found in _find_res, aborting")
+            return None
+
+        for profile_name in self.available_profiles.keys():
+            res = self._get_res(profile_name)
+
+            if res and res is not None:
+                return res
+
+        return None
+
+    def _get_profiles(self):
+        log.info("Getting firefox profiles")
+
+        if self.os == 'linux':
+            profiles_folder = self._expand("~/.mozilla/firefox/")
+
+        elif self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            profiles_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
+
+        else:
+            log.error("Unsupported OS. Returning None")
+            return None
+
+        log.debug("Firefox profiles root folder set to {}".format(profiles_folder))
+
+        if not os.path.exists(profiles_folder):
+            log.error("profiles_folder does not exists, returning {}")
+            return {}
+
+        try:
+            profiles_path = os.path.join(profiles_folder, "profiles.ini")
+            log.debug("profiles.ini path: {}".format(profiles_path))
+        except AttributeError:
+            log.error("Joining folder and profiles.ini failed. Returning None")
+            return {}
+        except:
+            log.error("Unhandeled exception")
+            if DEBUG:
+                raise
+            else:
+                return {}
+
+        if not os.path.exists(profiles_path):
+            # If profiles.ini does not exist no profile folder exists either
+            # or does it...
+            log.error("Profiles path not found. New FF installation?. Returning None")
+            return {}
+
+        profiles = ConfigParser.RawConfigParser()
+        profiles.read(profiles_path)
+        profiles.remove_section('General')
+
+        available_profiles = {}
+        for index, profile in enumerate(profiles.sections()):
+            name = profiles.get(profiles.sections()[index], 'Name')
+            path = profiles.get(profiles.sections()[index], 'Path')
+            available_profiles[name] = path
+
+        return available_profiles
+
+    def _get_res(self, profile_name):
+        log.debug("Getting firefox path for profile name: {}".format(profile_name))
+
+        ff_profile = self.available_profiles.get(profile_name)
+        res_file = "jetpack/jid1-xUfzOsOFlzSOXg@jetpack/simple-storage/store.json"
+
+        if not ff_profile:
+            log.error("Could not get selected profile path for {}".format(profile_name))
+            return None
+
+        if self.os == 'linux':
+            res_folder = self._expand("~/.mozilla/firefox/")
+
+        elif self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            res_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
+
+        else:
+            log.error("Unsupported OS: {} Returning None".format(self.os))
+            return None
+
+        log.debug("Firefox res_folder set to: {}".format(res_folder))
+
+        try:
+            full_path = os.path.join(res_folder, ff_profile, res_file)
+            log.debug("Full firefox path set to {}".format(full_path))
+
+            if os.path.exists(full_path):
+                log.debug("Full firefox path exists")
+                return full_path
+            else:
+                log.warn("Full firefox path does not exist. RES Not installed?")
+                return None
+
+        except AttributeError:
+            log.warn("Firefox joining failed for {}, {} and {}".format(res_folder, ff_profile, res_file))
+            return None
+
+        except:
+            log.error("Unhandeled exception")
+            if DEBUG:
+                raise
+            else:
+                return None
+
+
+    def _backup_file(self, path, fname):
+        log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
+        if not os.path.exists(path):
+            log.eror("Path not found {}".format(path))
+            return False
+
+        if not os.path.exists("res_backups"):
+            try:
+                os.makedirs("res_backups")
+            except IOError:
+                log.error("IOError encountered while trying to create res_backups folder. Aborting.")
+                return False
+            except:
+                log.error("Unahandeled exception occurred while trying to create res_bacups folder.")
+                if DEBUG:
+                    raise
+                else:
+                    pass
+
+
+        destination = os.path.join("res_backups", fname)
+        log.debug("Source and destination exist. Trying to copy {} to {}".format(path, destination))
+        try:
+            shutil.copy(path, destination)
+            # TODO: self.update_backup_list()
+            return True
+        except IOError:
+            log.error("Copy failed due to IOError")
+            return False
+        except:
+            log.error("Unhandeled exception occured")
+            if DEBUG:
+                raise
+            else:
+                return False
+
+    def change_profile(self, profile_name):
+        log.info("Firefox changing profile to {}".format(profile_name))
+
+        if profile_name not in self.available_profiles.keys():
+            log.debug("selected profile not in available profiles")
+            return False
+
+        self.path = self._get_res(profile_name)
+
+    def get_data(self, firefox_path=None):
+        log.debug("Firefox get data")
+
+        if not firefox_path:
+            firefox_path = self.path
+
+        if firefox_path is None:
+            log.error("Firefox path invalid")
+            return None
+
+        log.debug("Firefox path set to: {}".format(firefox_path))
+
+        if not os.path.exists(firefox_path):
+            log.debug("firefox_path refers to an invalid location")
+            return None
+
+        try:
+            log.debug("Opening firefox_path file with 'r' flag, utf-8 mode")
+            with codecs.open(firefox_path, "r", "utf-8") as firefox_in:
+                log.debug("json.load firefox file")
+                ff_json = json.load(firefox_in)
+
+            if not ff_json:
+                log.debug("Loading json data from firefox path returned no data. Aborting")
+                return None
+            else:
+                log.debug("ff_json contains some data")
+                return ff_json
+        except:
+            log.debug("Unhandeled exception occured")
+            if DEBUG:
+                raise
+            else:
+                pass
+
+    def set_data(self, json_data):
+        log.info("Firefox setting data")
+        if not json_data:
+            log.debug("json_data empty, aborting.")
+            # todo: verify json_data is valid RES data
+            return False
+
+        try:
+            with codecs.open(self.path, 'w', 'utf-8') as firefox_out:
+                log.debug("Writing dump to firefox file")
+                firefox_out.write(json_data)
+        except:
+            log.error("Unhandeled exception")
+            if DEBUG:
+                raise
+            else:
+                return False
+
+    def backup(self):
+        if self.path:
+            fname = "firefox.{}.backup".format(strftime("%Y-%m-%d"))
+            try:
+                return self._backup_file(self.path, fname)
+            except:
+                if DEBUG:
+                    raise
+                else:
+                    return False
+        else:
+            return False
+
+
+class RES(object):
+    def __init__(self):
+        log.debug("RES __init__")
+        self.chrome_path = None
+
+        log.info("Operating system detected:{}".format(platform.uname()))
+
+        self.chrome_path = self.__get_chrome_path()
+        log.info("Chrome path set to: {}".format(self.chrome_path))
+
+        self.firefox_path = None
+        self.firefox_profiles = {}
+        self.__get_firefox_profiles()
+
+        log.info("Firefox profiles available: {}".format(self.firefox_profiles))
+
+        if self.firefox_profiles:
+            log.info("One or more profile folders found, trying the first one")
+            self.firefox_path = self.__get_firefox_path()
+
+        log.info("Firefox path set to: {}".format(self.firefox_path))
+
+
+    def change_profile(self, profile_name):
+        self.firefox_path = self.__get_firefox_path(profile_name)
+
+    def __get_chrome_path(self):
+
+
+    def __get_firefox_profiles(self):
+                log.debug("Getting firefox profiles")
+
+
+
+    def __get_firefox_path(self, profile_name='deafult'):
+        log.debug("Getting firefox path for profile name: {}".format(profile_name))
+
+        res_folder = None
+        ff_profile = self.firefox_profiles.get(profile_name)
+        res_file = "jetpack/jid1-xUfzOsOFlzSOXg@jetpack/simple-storage/store.json"
+
+        if not ff_profile:
+            log.error("Could not get selected profile path for {}".format(profile_name))
+            return None
+
+        if self.os == 'linux':
+            res_folder = self._expand("~/.mozilla/firefox/")
+
+        elif self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            res_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
+
+        else:
+            log.error("Unsupported OS: {} Returning None".format(self.os))
+            return None
+
+        log.debug("Firefox res_folder set to: {}".format(res_folder))
+
+        try:
+            full_path = os.path.join(res_folder, ff_profile, res_file)
+            log.debug("Full firefox path set to {}".format(full_path))
+
+            if os.path.exists(full_path):
+                log.debug("Full firefox path exists")
+                return full_path
+            else:
+                log.warn("Full firefox path does not exist. RES Not installed?")
+                return None
+
+        except AttributeError:
+            log.warn("Firefox joining failed for {}, {} and {}".format(res_folder, ff_profile, res_file))
+            return None
+
+
+    def chrome_to_firefox(self, chrome_path=None, firefox_path=None):
+        log.debug("Chrome to firefox with: chrome_path={}, firefox_path={}".format(
+            chrome_path, firefox_path
+        ))
+
+        if not chrome_path:
+            chrome_path = self.chrome_path
+        if not firefox_path:
+            firefox_path = self.firefox_path
+        if chrome_path is None or firefox_path is None:
+            log.error("Chrome or firefox path is invalid")
+            log.debug("firefox_path={}, chrome_path={}".format(firefox_path, chrome_path))
+            return False
+
+        log.debug("Path setting done, chrome_path={}, firefox_path={}".format(
+            chrome_path, firefox_path
+        ))
+
+        if not os.path.exists(chrome_path) or not os.path.exists(firefox_path):
+            log.debug("chrome_path or firefox_path refers to invalid location")
+            log.debug("Chrome path exists: {}".format(os.path.exists(chrome_path)))
+            log.debug("Firefox path exists: {}".format(os.path.exists(chrome_path)))
+            return False
+
+        try:
+            log.debug("Connecting to database.")
+            con = sqlite3.connect(chrome_path)
+            c = con.cursor()
+            log.debug("Executing SELECT query")
+            db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
+            # todo: do some data verifying
+            if not db:
+                log.debug("SELECT query returned no data. Aborting.")
+                return False, "Migrating failed, no valid data was found in the database"
+            else:
+                log.debug("SELECT query returned data.")
+
+            log.debug("Creating dict dump")
+            dump = json.dumps(dict(db))
+
+            log.debug("Opening firefox_path file with 'w' flag")
+            with codecs.open(firefox_path, 'w', 'utf-8') as firefox_out:
+                log.debug("Writing dump to firefox file")
+                firefox_out.write(dump)
+
+            log.info("Migrating settings from chrome to firefox complete!")
+            return True
+        except:
+            log.debug("Exception when converting data from chrome to firefox")
+            if DEBUG: raise
+            return False
+
+
+    def firefox_to_chrome(self, chrome_path=None, firefox_path=None):
+        log.debug("Firefox to chrome with: chrome_path={}, firefox_path={}".format(
+            chrome_path, firefox_path
+        ))
+
+        if not chrome_path:
+            chrome_path = self.chrome_path
+        if not firefox_path:
+            firefox_path = self.firefox_path
+        if chrome_path is None or firefox_path is None:
+            log.error("Chrome or firefox path is invalid")
+            log.debug("firefox_path={}, chrome_path={}".format(firefox_path, chrome_path))
+            return False
+
+        log.debug("Path setting done, chrome_path={}, firefox_path={}".format(
+            chrome_path, firefox_path
+        ))
+
+        if not os.path.exists(chrome_path) or not os.path.exists(firefox_path):
+            log.debug("chrome_path or firefox_path refers to invalid location")
+            log.debug("Chrome path exists: {}".format(os.path.exists(chrome_path)))
+            log.debug("Firefox path exists: {}".format(os.path.exists(chrome_path)))
+            return False
+
+        try:
+            log.debug("Connecting to database...")
+            conn = sqlite3.connect(chrome_path)
+            c = conn.cursor()
+            # todo fetchone to verify it's a valid RES database
+
+            log.debug("Opening firefox_path file with 'r' flag, utf-8 mode")
+            with codecs.open(firefox_path, "r", "utf-8") as firefox_in:
+                log.debug("json.load firefox file")
+                ff_json = json.load(firefox_in)
+
+            if not ff_json:
+                log.debug("Loading json data from firefox path returned no data. Aborting")
+                return False, "Migrating failed, no json data loaded from file."
+            else:
+                log.debug("ff_json contains some data")
+
+            log.debug("Generating list of key, value tuples")
+            ff_data = [(key, value) for key, value in ff_json.items()]
+            log.debug("Tuples generated. Count: {}".format(len(ff_data)))
+
+            # todo: verify data to ensure it's valid!
+
+            log.debug("Executing DROP TABLE")
+            c.execute("DROP TABLE ItemTable;")
+
+            log.debug("Dropping table done. Executing CREATE TABLE")
+            c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
+
+            log.debug("Creating table done. Inserting data from firefox into the database")
+            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
+            #fixme: 'OR IGNORE' needed?
+
+            log.debug("Inserting data done. Committing changes")
+            conn.commit()
+            log.debug("Changes committed. Closing database")
+            c.close()
+            log.info("Migrating settings from firefox to chrome complete!")
+            return True
+        except:
+            # fixme
+            log.debug("Exception when converting data from firefox to chrome")
+            if DEBUG: raise
+            return False
+
+
+    def __backup_file(self, path, fname):
+
+
+    def backup_chrome(self):
+
+
+    def backup_firefox(self):
+
+
+    # TODO: Merge following two functions into one
+    def restore_chrome(self, backup_name):
+        log.debug("Restoring chrome, backup_name={}".format(backup_name))
+
+        filename = backup_name
+
+        full_path = os.path.join("res_backups", filename)
+        if not os.path.exists(full_path):
+            log.error("File not found at {} ".format(full_path))
+            return False
+
+        browser = filename.split('.')[0]
+
+        try:
+            if browser == "firefox":
+                self.firefox_to_chrome(firefox_path=full_path)
+                return True
+            elif browser == "chrome":
+                shutil.copy(full_path, self.chrome_path)
+                return True
+            else:
+                log.error("Unknown browser: {}".format(browser))
+                return False
+        except:
+            # self._warn("Restoring Chrome failed!")
+            return False
+            # todo: if DEBUG: raise
+
+    def restore_firefox(self, backup_name):  # TODO: ^
+        log.debug("Restoring firefox, backup_name={}".format(backup_name))
+
+        filename = backup_name
+
+        full_path = os.path.join("res_backups", filename)
+        if not os.path.exists(full_path):
+            log.error("File not found at {} ".format(full_path))
+            return False
+
+        browser = filename.split('.')[0]
+
+        try:
+            if browser == "firefox":
+                shutil.copy(full_path, self.firefox_path)
+                return True
+            elif browser == "chrome":
+                self.chrome_to_firefox(chrome_path=full_path)
+                return True
+            else:
+                log.error("Unknown browser: {}".format(browser))
+                return False
+        except:
+            # self._warn("Restoring Chrome failed!")
+            return False
+            # todo: if DEBUG: raise
+
+    def delete_backup_file(self, filename):
+        full_path = os.path.join("res_backups", filename)
+        log.debug("Trying to remove %s" % full_path)
+        os.remove(full_path)
+
+
 class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     # noinspection PyUnresolvedReferences
     def __init__(self, parent=None):
         super(RESToolUI, self).__init__(parent)
         self.setupUi(self)
 
-        self.os = platform.system().lower()
-        log.info("Operating system detected: %s" % str(platform.uname()))
-
-        self.chrome_path = self.get_chrome_path()
-        self.firefox_path = None
-        self.firefox_profiles = {}
-        self.get_firefox_profiles()
-        log.info("Chrome path set to: %s" % self.chrome_path)
-        log.info("Firefox profiles available: {}".format(self.firefox_profiles))
-        if len(self.firefox_profiles) < 2:
-            log.info("Only one profile available, using it by default")
-            self.firefox_path = self.get_firefox_path()
-
-        log.info("Firefox path set to: %s" % self.firefox_path)
-        self.lbl_os.setText("Not detected" if not self.os else self.os)
+        self.lbl_os.setText("Not detected" if not platform.system() else platform.system())
 
         self.lbl_version.setText(__version__)
+        self.res = RES()
 
         self.btn_ch_to_ff.clicked.connect(self.chrome_to_firefox)
         self.btn_ff_to_ch.clicked.connect(self.firefox_to_chrome)
@@ -131,17 +836,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             webbrowser.open(checkout_page)
         else:
             log.error("Got empty checkout page... {}".format(checkout_page))
-        pass
-
-    def _expand(self, path):
-        log.debug("Expanding: %s" % path)
-        if self.os == "linux":
-            return os.path.expanduser(path)
-        elif self.os == "windows":
-            return os.path.expandvars(path)
-        else:
-            log.error("Unsupported OS. Expanding failed.")
-            return None
 
     # noinspection PyCallByClass,PyTypeChecker
     def _warn(self, msg, title="Warnning"):
@@ -151,13 +845,14 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     # noinspection PyCallByClass,PyTypeChecker
     def _info(self, msg, title="Info"):
         QtGui.QMessageBox.information(self, title, msg,
-                                  QtGui.QMessageBox.Ok)
+                                      QtGui.QMessageBox.Ok)
 
     # noinspection PyCallByClass,PyTypeChecker
     def _prompt(self, msg, title="Prompt"):
         result = QtGui.QMessageBox.question(self, title, msg,
-                                  QtGui.QMessageBox.Cancel, QtGui.QMessageBox.No,
-                                  QtGui.QMessageBox.Yes)
+                                            QtGui.QMessageBox.Cancel,
+                                            QtGui.QMessageBox.No,
+                                            QtGui.QMessageBox.Yes)
 
         if result == QtGui.QMessageBox.Cancel:
             return False
@@ -166,7 +861,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         elif result == QtGui.QMessageBox.Yes:
             return True
         else:
-            log.debug("Returned unknown value from _prompt, %s" %result)
+            log.debug("Returned unknown value from _prompt, %s" % result)
             return False
 
     # noinspection PyCallByClass,PyTypeChecker
@@ -174,9 +869,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         QtGui.QMessageBox.critical(self, title, msg, QtGui.QMessageBox.Ok)
 
     def update_ui(self):
-        self.lbl_firefox.setText(str(bool(self.firefox_path)))
-        self.lbl_chrome.setText(str(bool(self.chrome_path)))
-        if not self.chrome_path or not self.firefox_path:
+        self.lbl_firefox.setText(str(bool(self.res.firefox_path)))
+        self.lbl_chrome.setText(str(bool(self.res.chrome_path)))
+        if not self.chrome_path or not self.res.firefox_path:
             self.btn_ch_to_ff.setEnabled(False)
             self.btn_ff_to_ch.setEnabled(False)
 
@@ -195,285 +890,35 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.btn_ch_to_ff.setEnabled(True)
             self.btn_ff_to_ch.setEnabled(True)
 
-    def change_profile(self):
-        self.firefox_path = self.get_firefox_path()
+    def chrome_to_firefox(self):
+        pass
 
-    def get_chrome_path(self):
-        log.debug("Getting chrome path")
-        folder = None
-        res_file = "chrome-extension_kbmfpngjjgdllneeigpgjifpgocmfgmb_0.localstorage"
-
-        if self.os == 'linux':
-            folder = self._expand("~/.config/google-chrome/Default/Local Storage/")
-        elif self.os == 'windows':
-            if platform.release() == "XP":
-                log.error("Unsupported OS (Windows XP). Returning None")
-                return None
-            # todo: Check if it's possible for folder to be in %APPDATA% instead
-            folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Local Storage\\")
-        else:
-            log.error("Unsupported OS. Returning None")
-            return None
-        try:
-            log.debug("Chrome folder set to: %s" % folder)
-            full_path = os.path.join(folder, res_file)
-            log.debug("Full chrome path set to %s" % full_path)
-            if os.path.exists(full_path):
-                log.debug("Full chrome path exists")
-                return full_path
-            else:
-                log.warn("Full chrome path does not exist. RES Not installed?")
-                return None
-        except AttributeError:
-            log.warn("Chrome joining failed for '%s' and '%s'" % (folder, res_file))
-            return None
-
-    def get_firefox_profiles(self):
-        log.debug("Gettin firefox profiles")
-
-        profiles_folder = None
-
-        if self.os == 'linux':
-            profiles_folder = self._expand("~/.mozilla/firefox/")
-        elif self.os == 'windows':
-            if platform.release() == "XP":
-                log.error("Unsupported OS (Windows XP). Returning None")
-                return None
-            profiles_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
-        else:
-            log.error("Unsupported OS. Returning None")
-            return None
-        log.debug("Firefox folder set to %s" % profiles_folder)
-        try:
-            profiles_path = os.path.join(profiles_folder, "profiles.ini")
-            log.debug("profiles.ini path: %s" % profiles_path)
-        except AttributeError:
-            log.error("Joining folder and profiles.ini failed. Returning None")
-            return None
-
-        if not os.path.exists(profiles_path):
-            # If profiles.ini does not exist no profile folder exists either
-            log.error("Profiles path not found. New FF installation?. Returning None")
-            return None
-
-        profiles = ConfigParser.RawConfigParser()
-        profiles.read(profiles_path)
-        profiles.remove_section('General')
-
-        for index, profile in enumerate(profiles.sections()):
-            name = profiles.get(profiles.sections()[index], 'Name')
-            path = profiles.get(profiles.sections()[index], 'Path')
-            self.firefox_profiles[name] = path
-            self.cbo_ff_profile.addItem(name)
-
-    def get_firefox_path(self):
-        log.debug("Gettin firefox path")
-
-        folder = None
-        profile = self.firefox_profiles.get(str(self.cbo_ff_profile.currentText()))
-        res_file = "jetpack/jid1-xUfzOsOFlzSOXg@jetpack/simple-storage/store.json"
-
-        if not profile:
-            log.error("Could not get selected profile path for %s " % self.cbo_ff_profile.currentText())
-            return None
-
-        if self.os == 'linux':
-            folder = self._expand("~/.mozilla/firefox/")
-        elif self.os == 'windows':
-            if platform.release() == "XP":
-                log.error("Unsupported OS (Windows XP). Returning None")
-                return None
-            folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
-        else:
-            log.error("Unsupported OS. Returning None")
-            return None
-        try:
-            log.debug("Firefox folder set to: %s" % folder)
-            full_path = os.path.join(folder, profile, res_file)
-            log.debug("Full firefox path set to %s" % full_path)
-            if os.path.exists(full_path):
-                log.debug("Full firefox path exists")
-                return full_path
-            else:
-                log.warn("Full firefox path does not exist. RES Not installed?")
-                return None
-        except AttributeError:
-            log.warn("Chrome joining failed for '%s', %s and '%s'" % (folder, profile, res_file))
-            return None
-
-
-    def chrome_to_firefox(self, chrome_path=None, firefox_path=None):
-        if not chrome_path:
-            chrome_path = self.chrome_path
-        if not firefox_path:
-            firefox_path = self.firefox_path
-        if chrome_path is None or firefox_path is None:
-            log.error("Chrome or firefox path is invalid")
-            log.debug("Firefox %s ; Chrome %s" % (firefox_path, chrome_path))
-            return
-
-        try:
-            log.debug("Connecting database. %s" % chrome_path)
-            con = sqlite3.connect(chrome_path)
-            c = con.cursor()
-            log.debug("Getting database data...")
-            db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
-            log.debug("Opening firefox file...")
-            with codecs.open(firefox_path, 'w', 'utf-8') as firefox_out:
-                dump = json.dumps(dict(db))
-                log.debug("Writing to firefox file...")
-                firefox_out.write(dump)
-        except:
-            self._warn("Migrating settings failed!")
-            if DEBUG:raise
-            return
-
-        self._info("Migrating settings from Chrome to Firefox complete!")
-        log.info("Chrome to firefox done!")
-
-    def firefox_to_chrome(self, chrome_path=None, firefox_path=None):
-        if not chrome_path:
-            chrome_path = self.chrome_path
-        if not firefox_path:
-            firefox_path = self.firefox_path
-        if chrome_path is None or firefox_path is None:
-            log.error("Chrome or firefox path is invalid")
-            log.debug("Firefox %s ; Chrome %s" % (firefox_path, chrome_path))
-            return
-
-        try:
-            log.debug("Connecting database...")
-            conn = sqlite3.connect(chrome_path)
-            c = conn.cursor()
-            log.debug("Opening firefox file...")
-            with codecs.open(firefox_path, "r", "utf-8") as firefox_in:
-                log.debug("Getting database data...")
-                ff_json = json.load(firefox_in)
-
-            ff_data = [(key, value) for key, value in ff_json.items()]
-            log.debug("ff data elements {}".format(len(ff_data)))
-            log.debug("Dropping table...")
-            c.execute("DROP TABLE IF EXISTS ItemTable;")
-            log.debug("Creating table...")
-            c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
-            log.debug("Inserting new data...")
-            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
-            log.debug("Commiting changes...")
-            conn.commit()
-            c.close()
-        except:
-            self._warn("Migrating settings failed!")
-            if DEBUG:raise
-            return
-
-        log.info("Firefox to chrome done!")
-        self._info("Migrating settings from firefox to Chrome complete!")
-
-    def backup_file(self, path, fname):
-        if not os.path.exists(path):
-            log.eror("Backup file %s not found" % path)
-            return False
-
-        if not os.path.exists("res_backups"):
-            try:
-                os.makedirs("res_backups")
-            except IOError:
-                log.error("Creating res_backups folder failed")
-                return False
-
-        destination = os.path.join("res_backups", fname)
-        log.debug("Trying to copy %s to %s" % (path, destination))
-        try:
-            shutil.copy(path, destination)
-            self.update_backup_list()
-            return True
-        except IOError:
-            log.error("Copy failed due to IOError")
-            return False
+    def firefox_to_chrome(self):
+        pass
 
     def backup_chrome(self):
-        if self.chrome_path:
-            fname = "chrome.{}.backup".format(strftime("%Y-%m-%d"))
-            if self.backup_file(self.chrome_path, fname):
-                self._info("Chrome backup successfully created!")
-            else:
-                self._warn("Chrome backup failed!")
+        pass
 
     def backup_firefox(self):
-        if self.firefox_path:
-            fname = "firefox.{}.backup".format(strftime("%Y-%m-%d"))
-            if self.backup_file(self.firefox_path, fname):
-                self._info("Firefox backup successfully created!")
-            else:
-                self._warn("Firefox backup failed!")
+        pass
 
     def restore_chrome(self):
-        log.debug("Restoring chrome")
-        try:
-            filename = str(self.list_backups.selectedItems()[0].text())
-        except IndexError:
-            self._warn("No backup selected from the list to restore.")
-            log.error("No file selected to restore from")
-            return
-
-        full_path = os.path.join("res_backups", filename)
-        if not os.path.exists(full_path):
-            log.error("File not found at %s " % full_path)
-            return
-        browser = filename.split('.')[0]
-
-        try:
-            if browser == "firefox":
-                self.firefox_to_chrome(firefox_path=full_path)
-                self._info("Chrome restored from firefox backup")
-            elif browser == "chrome":
-                shutil.copy(full_path, self.chrome_path)
-                self._info("Chrome restored from backup")
-            else:
-                self._warn("Restore aborted. Unknown backup format")
-                log.error("Unknown browser: %s" % browser)
-        except:
-            self._warn("Restoring Chrome failed!")
-            if DEBUG:raise
+        # self.list_backups.selectedItems()[0].text()
+        pass
 
     def restore_firefox(self):
-        log.debug("Restoring firefox")
-        try:
-            filename = str(self.list_backups.selectedItems()[0].text())
-        except IndexError:
-            self._warn("No backup selected from the list to restore.")
-            log.error("No file selected to restore from")
-            return
-
-        full_path = os.path.join("res_backups", filename)
-        if not os.path.exists(full_path):
-            log.error("File not found at %s " % full_path)
-            return
-        browser = filename.split('.')[0]
-        try:
-            if browser == "chrome":
-                self.chrome_to_firefox(chrome_path=full_path)
-                self._info("Firefox restored from Chrome backup")
-            elif browser == "firefox":
-                shutil.copy(full_path, self.firefox_path)
-                self._info("Firefox restored")
-            else:
-                self._warn("Restore aborted. Unknown backup format")
-                log.error("Unknown browser: %s" % browser)
-        except:
-            self._warn("Restoring Firefox failed!")
-            if DEBUG:raise
+        # self.list_backups.selectedItems()[0].text()
+        pass
 
     def delete_backup_file(self):
-        try:
-            filename = str(self.list_backups.selectedItems()[0].text())
-        except IndexError:
-            log.debug("No file selected for deltion. IndexError")
-            return
-        full_path = os.path.join("res_backups", filename)
-        log.debug("Trying to remove %s" % full_path)
-        os.remove(full_path)
-        self.update_backup_list()
+        # self.list_backups.selectedItems()[0].text()
+        # self.update_backup_list()
+        pass
+
+    def change_profile(self):
+        self.res.change_profile(str(self.cbo_ff_profile.currentText()))
+        pass
+
 
     def update_backup_list(self):
         self.list_backups.clear()
@@ -488,6 +933,10 @@ def main():
     form = RESToolUI()
     form.show()
     app.exec_()
+
+
+def cli():
+    pass
 
 
 if __name__ == '__main__':
