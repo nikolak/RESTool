@@ -10,16 +10,26 @@ Tests for `RESTool` module.
 
 import unittest
 
-from RESTool import RESTool
+from RESTool.RESTool_main import RES
 
 
-class TestRestool(unittest.TestCase):
+class TestRES(unittest.TestCase):
 
     def setUp(self):
         pass
 
-    def test_something(self):
+    def test_chrome_backup(self):
         pass
+
+    def test_ff_backup(self):
+        pass
+
+    def test_chrome_to_ff(self):
+        pass
+
+    def test_ff_to_chrome(self):
+        pass
+
 
     def tearDown(self):
         pass
