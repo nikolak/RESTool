@@ -730,7 +730,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
 
     def restore_chrome(self):
-        backup_fname = self.list_backups.selectedItems()[0].text()
+        backup_fname = str(self.list_backups.selectedItems()[0].text())
         backup_path = os.path.join("res_backups", backup_fname)
         browser = backup_fname.split('.')[0]
 
@@ -761,7 +761,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
 
     def restore_firefox(self):
-        backup_fname = self.list_backups.selectedItems()[0].text()
+        backup_fname = str(self.list_backups.selectedItems()[0].text())
         backup_path = os.path.join("res_backups", backup_fname)
         browser = backup_fname.split('.')[0]
 
@@ -792,7 +792,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
 
     def delete_backup_file(self):
-        fname = self.list_backups.selectedItems()[0].text()
+        fname = str(self.list_backups.selectedItems()[0].text())
         try:
             os.remove(os.path.join("res_backups", fname))
         except:
