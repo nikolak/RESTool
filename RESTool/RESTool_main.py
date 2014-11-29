@@ -272,6 +272,21 @@ class Chrome(object):
         else:
             return False
 
+    def restore_from_self(self, backup_path):
+        log.info("Chrome restore from self")
+
+        if not self.res_exists or not backup_path:
+            return False
+
+        try:
+            shutil.copy(backup_path, self.path)
+            return True
+        except:
+            if DEBUG:
+                raise
+            else:
+                return False
+
 
 class Firefox(object):
     def __init__(self):
@@ -308,6 +323,7 @@ class Firefox(object):
             res = self._get_res(profile_name)
 
             if res and res is not None:
+                self.profile = profile_name
                 return res
 
         return None
@@ -525,6 +541,21 @@ class Firefox(object):
         else:
             return False
 
+    def restore_from_self(self, backup_path):
+        log.info("Chrome restore from self")
+
+        if not self.res_exists or not backup_path:
+            return False
+
+        try:
+            shutil.copy(backup_path, self.path)
+            return True
+        except:
+            if DEBUG:
+                raise
+            else:
+                return False
+
 
 class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     # noinspection PyUnresolvedReferences
@@ -535,7 +566,14 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.lbl_os.setText("Not detected" if not platform.system() else platform.system())
 
         self.lbl_version.setText(__version__)
-        self.res = RES()
+        self.chrome = Chrome()
+        self.firefox = Firefox()
+
+        if self.firefox.profile:
+            self.cbo_ff_profile.addItem(self.firefox.profile)
+
+        for profile in [p for p in self.firefox.available_profiles.keys() if p != self.firefox.profile]:
+            self.cbo_ff_profile.addItem(profile)
 
         self.btn_ch_to_ff.clicked.connect(self.chrome_to_firefox)
         self.btn_ff_to_ch.clicked.connect(self.firefox_to_chrome)
@@ -598,51 +636,173 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         QtGui.QMessageBox.critical(self, title, msg, QtGui.QMessageBox.Ok)
 
     def update_ui(self):
-        self.lbl_firefox.setText(str(bool(self.res.firefox_path)))
-        self.lbl_chrome.setText(str(bool(self.res.chrome_path)))
-        if not self.chrome_path or not self.res.firefox_path:
+        self.lbl_firefox.setText(str(self.firefox.res_exists))
+        self.lbl_chrome.setText(str(self.chrome.res_exists))
+        if not self.chrome.res_exists or not self.firefox.res_exists:
             self.btn_ch_to_ff.setEnabled(False)
             self.btn_ff_to_ch.setEnabled(False)
 
-        if not self.chrome_path:
+        if not self.chrome.res_exists:
             self.btn_backup_ch.setEnabled(False)
             self.btn_restore_ch.setEnabled(False)
 
-        if not self.firefox_path:
+        if not self.firefox.res_exists:
             self.btn_backup_ff.setEnabled(False)
             self.btn_restore_ff.setEnabled(False)
         else:  # to handle profile change
             self.btn_backup_ff.setEnabled(True)
             self.btn_restore_ff.setEnabled(True)
 
-        if self.chrome_path and self.firefox_path:
+        if self.chrome.res_exists and self.firefox.res_exists:
             self.btn_ch_to_ff.setEnabled(True)
             self.btn_ff_to_ch.setEnabled(True)
 
     def chrome_to_firefox(self):
-        pass
+        if not self.chrome.res_exists or not self.firefox.res_exists:
+            # fixme: can this even happen?
+            return
+
+        try:
+            chrome_data = self.chrome.get_data()
+            if not chrome_data:
+                self._warn("Could not get Chrome data")
+                return
+
+            if self.firefox.set_data(chrome_data):
+                self._info("Migrating settings from Chrome to Firefox done!")
+            else:
+                self._warn("Migrating settings from Chrome to Firefox failed!")
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error occurred while migrating settings from Chrome to Firefox")
+
 
     def firefox_to_chrome(self):
-        pass
+        if not self.chrome.res_exists or not self.firefox.res_exists:
+            # fixme: can this even happen?
+            return
+
+        try:
+            firefox_data = self.firefox.get_data()
+            if not firefox_data:
+                self._warn("Could not get Firefox data")
+                return
+
+            if self.chrome.set_data(firefox_data):
+                self._info("Migrating settings from Firefox to Chrome done!")
+            else:
+                self._warn("Migrating settings from Firefox to Chrome failed!")
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error occurred while migrating settings from Chrome to Firefox")
+
 
     def backup_chrome(self):
-        pass
+        try:
+            if self.chrome.backup():
+                self._info("Backing up Chrome done!")
+            else:
+                self._warn("Backing up Chrome failed!")
+
+            self.update_backup_list()
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error occurred while backing up Chrome")
 
     def backup_firefox(self):
-        pass
+        try:
+            if self.firefox.backup():
+                self._info("Backing up Firefox done!")
+            else:
+                self._warn("Backing up Firefox failed!")
+            self.update_backup_list()
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error occurred while backing up Firefox")
+
 
     def restore_chrome(self):
-        # self.list_backups.selectedItems()[0].text()
-        pass
+        backup_fname = self.list_backups.selectedItems()[0].text()
+        backup_path = os.path.join("res_backups", backup_fname)
+        browser = backup_fname.split('.')[0]
+
+        try:
+            if browser == "firefox":
+                data = self.firefox.get_data(backup_path)
+            elif browser == "chrome":
+                if self.chrome.restore_from_self(backup_path):
+                    self._info("Chrome restored from backup")
+                else:
+                    self._warn("Restoring Chrome from backup failed")
+                return
+            else:
+                self._warn("Invalid backup file name")
+                return
+
+            if not data:
+                self._warn("Invalid backup data")
+                return
+
+            self.chrome.set_data(data)
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error processing the selected file")
+            return
+
 
     def restore_firefox(self):
-        # self.list_backups.selectedItems()[0].text()
-        pass
+        backup_fname = self.list_backups.selectedItems()[0].text()
+        backup_path = os.path.join("res_backups", backup_fname)
+        browser = backup_fname.split('.')[0]
+
+        try:
+            if browser == "firefox":
+                if self.firefox.restore_from_self(backup_path):
+                    self._info("Firefox restored from backup")
+                else:
+                    self._warn("Restoring Firefox from backup failed.")
+                return
+            elif browser == "chrome":
+                data = self.chrome.get_data(backup_path)
+            else:
+                self._warn("Invalid backup file name")
+                return
+
+            if not data:
+                self._warn("Invalid backup data")
+                return
+
+            self.chrome.set_data(data)
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("Error processing the selected file")
+            return
+
 
     def delete_backup_file(self):
-        # self.list_backups.selectedItems()[0].text()
-        # self.update_backup_list()
+        fname = self.list_backups.selectedItems()[0].text()
+        try:
+            os.remove(os.path.join("res_backups", fname))
+        except:
+            if DEBUG:
+                raise
+
+            self._warn("File removal failed")
+        self.update_backup_list()
         pass
+
 
     def change_profile(self):
         self.res.change_profile(str(self.cbo_ff_profile.currentText()))
@@ -655,12 +815,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             backup_files = [x for x in os.listdir("res_backups") if x.endswith("backup")]
             for backup_name in backup_files:
                 self.list_backups.addItem(backup_name)
-
-
-    def delete_backup_file(self, filename):
-        full_path = os.path.join("res_backups", filename)
-        log.debug("Trying to remove %s" % full_path)
-        os.remove(full_path)
 
 
 def main():
