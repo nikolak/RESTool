@@ -521,6 +521,7 @@ class Firefox(object):
             with codecs.open(self.path, 'w', 'utf-8') as firefox_out:
                 log.debug("Writing dump to firefox file")
                 firefox_out.write(json_data)
+            return True
         except:
             log.error("Unhandeled exception")
             if DEBUG:
