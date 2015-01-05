@@ -28,4 +28,4 @@ docs:
 	open docs/_build/html/index.html
 
 build-ui:
-	pyuic4 RESTool/ui/design.ui -o RESTool/restoolgui.py
+	pyuic4 RESTool/ui/design_v2.ui -o RESTool/restoolgui.py

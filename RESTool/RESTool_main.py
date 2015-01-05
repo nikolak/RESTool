@@ -38,7 +38,7 @@ from collections import OrderedDict
 from browsers import Chrome, Firefox
 
 try:
-    from RESTool import restoolgui2
+    from RESTool import restoolgui
 except ImportError:
     import restoolgui2
 
@@ -64,7 +64,7 @@ if DEBUG:
     log.addHandler(ch)
     log.addHandler(fh)
 
-class RESToolUI(QtGui.QMainWindow, restoolgui2.Ui_MainWindow):
+class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
     # noinspection PyUnresolvedReferences
     def __init__(self, parent=None):
