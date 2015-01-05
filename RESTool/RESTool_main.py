@@ -32,6 +32,8 @@ import traceback
 import logging
 import shutil
 from time import strftime
+import copy
+from collections import OrderedDict
 
 from browsers import Chrome, Firefox
 
@@ -68,12 +70,17 @@ class RESToolUI(QtGui.QMainWindow, restoolgui2.Ui_MainWindow):
     def __init__(self, parent=None):
         super(RESToolUI, self).__init__(parent)
         self.setupUi(self)
+        self.labelMessage.setVisible(False)
 
-        self.choices_first = None
-        self.choices_second = None
+        self.choices_first = OrderedDict({"None":None})
+        self.choices_second = OrderedDict({"None":None})
+        self.profile_choices_first = OrderedDict({"None":None})
+        self.profile_choices_second = OrderedDict({"None":None})
 
         self.first_browser = None
         self.second_browser = None
+        self.first_br_profile = None
+        self.second_br_profile = None
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
@@ -87,6 +94,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui2.Ui_MainWindow):
         self.btnBackupSecond.clicked.connect(self.backup_second)
         self.btnRestoreToFirst.clicked.connect(self.resotre_to_first)
         self.btnBackupSecond.clicked.connect(self.restore_to_second)
+
+        self._set_available_browsers()
+        self._set_available_profiles()
 
     # noinspection PyCallByClass,PyTypeChecker
     def _warn(self, msg, title="Warnning"):
@@ -119,26 +129,101 @@ class RESToolUI(QtGui.QMainWindow, restoolgui2.Ui_MainWindow):
     def _critical(self, msg, title="Error"):
         QtGui.QMessageBox.critical(self, title, msg, QtGui.QMessageBox.Ok)
 
-    def _get_available_browsers(self):
-        pass
+    def _show_warning_label(self, msg):
+        self.labelMessage.setText(msg)
+        self.labelMessage.setVisible(True)
 
-    def _populate_choices(self):
-        pass
+    def _set_available_browsers(self):
+        chrome = Chrome()
+        firefox = Firefox()
+
+
+        if chrome.res_exists:
+            self.choices_first['Chrome'] = chrome
+            self.choices_second['Chrome'] = copy.copy(chrome)
+
+        if firefox.res_exists:
+            self.choices_first['Firefox'] = firefox
+            self.choices_second['Firefox'] = copy.copy(firefox)
+
+        for browser_name in self.choices_first:
+            self.cboFirstBrowser.addItem(browser_name)
+            self.cboSecondBrowser.addItem(browser_name)
+
+        if not self.choices_first:
+            self._warn("RES could not be found in Firefox or Chrome!")
+
+    def _set_available_profiles(self):
+        #TODO: Get real profiles and populate cbo
+
+        for key in self.profile_choices_first:
+            self.cboFirstBrowserProfile.addItem(key)
+
+        for key in self.profile_choices_second:
+            self.cboSecondBrowserProfile.addItem(key)
 
     def _first_browser_changed(self):
-        pass
+        self.first_browser = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
+
+        if not self.first_browser:
+            self.first_br_profile = None
+            self.cboFirstBrowserProfile.setCurrentIndex(0)
+
+        self._update_ui_elements()
 
     def _first_browser_profile_changed(self):
         pass
 
     def _second_browser_changed(self):
-        pass
+        self.second_browser = self.choices_second.get(str(self.cboSecondBrowser.currentText()))
+
+        if not self.second_browser:
+            self.second_br_profile = None
+            self.cboSecondBrowserProfile.setCurrentIndex(0)
+
+        self._update_ui_elements()
 
     def _second_browser_profile_changed(self):
         pass
 
-    def _update_main_buttons(self):
-        pass
+    def _update_ui_elements(self):
+        if not self.first_browser and not self.second_browser:
+            return
+
+        if type(self.first_browser) == type(self.second_browser):
+            if self.first_br_profile == self.second_br_profile:
+                self._show_warning_label("Pick different browsers and/or profiles!")
+                return
+
+        if self.labelMessage.isVisible():
+            self.labelMessage.setVisible(False)
+
+        if self.first_browser and not self.second_browser:
+            self.btnBackupFirst.setEnabled(True)
+            self.btnRestoreToFirst.setEnabled(True)
+
+            self.btnBackupSecond.setEnabled(False)
+            self.btnRestoreToSecond.setEnabled(False)
+            self.btnFirstToSecond.setEnabled(False)
+            self.btnSecondToFirst.setEnabled(False)
+            return
+
+        if self.second_browser and not self.first_browser:
+            self.btnBackupSecond.setEnabled(True)
+            self.btnRestoreToSecond.setEnabled(True)
+
+            self.btnBackupFirst.setEnabled(False)
+            self.btnRestoreToFirst.setEnabled(False)
+            self.btnFirstToSecond.setEnabled(False)
+            self.btnSecondToFirst.setEnabled(False)
+            return
+
+        self.btnBackupFirst.setEnabled(True)
+        self.btnBackupSecond.setEnabled(True)
+        self.btnFirstToSecond.setEnabled(True)
+        self.btnSecondToFirst.setEnabled(True)
+        self.btnRestoreToFirst.setEnabled(True)
+        self.btnRestoreToSecond.setEnabled(True)
 
     def _update_backups_list(self):
         pass
@@ -160,224 +245,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui2.Ui_MainWindow):
 
     def restore_to_second(self):
         pass
-
-
-class RESToolUI_old(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
-    # noinspection PyUnresolvedReferences
-    def __init__(self, parent=None):
-        super(RESToolUI, self).__init__(parent)
-        self.setupUi(self)
-
-        self.lbl_os.setText("Not detected" if not platform.system() else platform.system())
-
-        self.lbl_version.setText(__version__)
-        self.chrome = Chrome()
-        self.firefox = Firefox()
-
-        if self.firefox.profile:
-            self.cbo_ff_profile.addItem(self.firefox.profile)
-
-        for profile in [p for p in self.firefox.available_profiles.keys() if p != self.firefox.profile]:
-            self.cbo_ff_profile.addItem(profile)
-
-        self.btn_ch_to_ff.clicked.connect(self.chrome_to_firefox)
-        self.btn_ff_to_ch.clicked.connect(self.firefox_to_chrome)
-        self.btn_backup_ch.clicked.connect(self.backup_chrome)
-        self.btn_backup_ff.clicked.connect(self.backup_firefox)
-        self.btn_restore_ch.clicked.connect(self.restore_chrome)
-        self.btn_restore_ff.clicked.connect(self.restore_firefox)
-        self.btn_del_backup.clicked.connect(self.delete_backup_file)
-
-        self.cbo_ff_profile.currentIndexChanged.connect(self.change_profile)
-        self.cbo_ff_profile.currentIndexChanged.connect(self.update_ui)
-
-        self.btn_donate_res.clicked.connect(slot=lambda: webbrowser.open(RES_DONATE_URL))
-
-        self.update_ui()
-        self.update_backup_list()
-
-
-    def update_ui(self):
-        self.lbl_firefox.setText(str(self.firefox.res_exists))
-        self.lbl_chrome.setText(str(self.chrome.res_exists))
-        if not self.chrome.res_exists or not self.firefox.res_exists:
-            self.btn_ch_to_ff.setEnabled(False)
-            self.btn_ff_to_ch.setEnabled(False)
-
-        if not self.chrome.res_exists:
-            self.btn_backup_ch.setEnabled(False)
-            self.btn_restore_ch.setEnabled(False)
-
-        if not self.firefox.res_exists:
-            self.btn_backup_ff.setEnabled(False)
-            self.btn_restore_ff.setEnabled(False)
-        else:  # to handle profile change
-            self.btn_backup_ff.setEnabled(True)
-            self.btn_restore_ff.setEnabled(True)
-
-        if self.chrome.res_exists and self.firefox.res_exists:
-            self.btn_ch_to_ff.setEnabled(True)
-            self.btn_ff_to_ch.setEnabled(True)
-
-    def chrome_to_firefox(self):
-        if not self.chrome.res_exists or not self.firefox.res_exists:
-            # fixme: can this even happen?
-            return
-
-        try:
-            chrome_data = self.chrome.get_data()
-            if not chrome_data:
-                self._warn("Could not get Chrome data")
-                return
-
-            if self.firefox.set_data(chrome_data):
-                self._info("Migrating settings from Chrome to Firefox done!")
-            else:
-                self._warn("Migrating settings from Chrome to Firefox failed!")
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error occurred while migrating settings from Chrome to Firefox")
-
-
-    def firefox_to_chrome(self):
-        if not self.chrome.res_exists or not self.firefox.res_exists:
-            # fixme: can this even happen?
-            return
-
-        try:
-            firefox_data = self.firefox.get_data()
-            if not firefox_data:
-                self._warn("Could not get Firefox data")
-                return
-
-            if self.chrome.set_data(firefox_data):
-                self._info("Migrating settings from Firefox to Chrome done!")
-            else:
-                self._warn("Migrating settings from Firefox to Chrome failed!")
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error occurred while migrating settings from Chrome to Firefox")
-
-
-    def backup_chrome(self):
-        try:
-            if self.chrome.backup():
-                self._info("Backing up Chrome done!")
-            else:
-                self._warn("Backing up Chrome failed!")
-
-            self.update_backup_list()
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error occurred while backing up Chrome")
-
-    def backup_firefox(self):
-        try:
-            if self.firefox.backup():
-                self._info("Backing up Firefox done!")
-            else:
-                self._warn("Backing up Firefox failed!")
-            self.update_backup_list()
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error occurred while backing up Firefox")
-
-
-    def restore_chrome(self):
-        backup_fname = str(self.list_backups.selectedItems()[0].text())
-        backup_path = os.path.join("res_backups", backup_fname)
-        browser = backup_fname.split('.')[0]
-
-        try:
-            if browser == "firefox":
-                data = self.firefox.get_data(backup_path)
-            elif browser == "chrome":
-                if self.chrome.restore_from_self(backup_path):
-                    self._info("Chrome restored from backup")
-                else:
-                    self._warn("Restoring Chrome from backup failed")
-                return
-            else:
-                self._warn("Invalid backup file name")
-                return
-
-            if not data:
-                self._warn("Invalid backup data")
-                return
-
-            self.chrome.set_data(data)
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error processing the selected file")
-            return
-
-
-    def restore_firefox(self):
-        backup_fname = str(self.list_backups.selectedItems()[0].text())
-        backup_path = os.path.join("res_backups", backup_fname)
-        browser = backup_fname.split('.')[0]
-
-        try:
-            if browser == "firefox":
-                if self.firefox.restore_from_self(backup_path):
-                    self._info("Firefox restored from backup")
-                else:
-                    self._warn("Restoring Firefox from backup failed.")
-                return
-            elif browser == "chrome":
-                data = self.chrome.get_data(backup_path)
-            else:
-                self._warn("Invalid backup file name")
-                return
-
-            if not data:
-                self._warn("Invalid backup data")
-                return
-
-            self.chrome.set_data(data)
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("Error processing the selected file")
-            return
-
-
-    def delete_backup_file(self):
-        fname = str(self.list_backups.selectedItems()[0].text())
-        try:
-            os.remove(os.path.join("res_backups", fname))
-        except:
-            if DEBUG:
-                raise
-
-            self._warn("File removal failed")
-        self.update_backup_list()
-        pass
-
-
-    def change_profile(self):
-        self.res.change_profile(str(self.cbo_ff_profile.currentText()))
-        pass
-
-
-    def update_backup_list(self):
-        self.list_backups.clear()
-        if os.path.exists("res_backups"):
-            backup_files = [x for x in os.listdir("res_backups") if x.endswith("backup")]
-            for backup_name in backup_files:
-                self.list_backups.addItem(backup_name)
-
 
 def main():
     app = QtGui.QApplication(sys.argv)
