@@ -8,7 +8,7 @@ History
 
 New features:
 
-* CLI Support
+* CLI Support (in progress)
 
 Code changes:
 
@@ -20,7 +20,9 @@ Code changes:
 
 * Code reorganization
 
-*
+* New GUI
+
+* Moved browsers to separate package
 
 Other changes:
 
