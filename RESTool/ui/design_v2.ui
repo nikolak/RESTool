@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>610</width>
+    <width>583</width>
     <height>472</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <layout class="QVBoxLayout" name="MainContentLayout" stretch="30,0,70">
+         <layout class="QVBoxLayout" name="MainContentLayout" stretch="30,0,0,70">
           <item>
            <layout class="QHBoxLayout" name="BrowseerPickerLayout" stretch="50,0,50">
             <item>
@@ -145,6 +145,22 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="labelMessage">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Warning message&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="ApplicationActionsLayout" stretch="60,40">
             <item>
              <layout class="QVBoxLayout" name="BackupsLayout">
@@ -161,7 +177,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select to different browsers</string>
+                 <string>First browser to the second browser</string>
                 </property>
                </widget>
               </item>
@@ -171,7 +187,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select two different browsers</string>
+                 <string>Second browser to the first browser</string>
                 </property>
                </widget>
               </item>
@@ -195,7 +211,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select at least one browser</string>
+                 <string>Backup first browser</string>
                 </property>
                </widget>
               </item>
@@ -205,7 +221,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select at least one browser</string>
+                 <string>Backup second browser</string>
                 </property>
                </widget>
               </item>
@@ -215,7 +231,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select at least one browser</string>
+                 <string>Restore selected backup to the first browser</string>
                 </property>
                </widget>
               </item>
@@ -225,7 +241,7 @@
                  <bool>false</bool>
                 </property>
                 <property name="text">
-                 <string>You need to select at least one browser</string>
+                 <string>Restore selected backup to the second browser</string>
                 </property>
                </widget>
               </item>
