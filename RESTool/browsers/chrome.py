@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import json
+import logging
+import os
+import platform
+import shutil
+import sqlite3
+from time import strftime
+
+log = logging.getLogger()
+
+DEBUG = True  # FIXME
+
 
 class Chrome(object):
     def __init__(self):
@@ -211,3 +223,6 @@ class Chrome(object):
             else:
                 return False
 
+
+if __name__ == '__main__':
+    pass

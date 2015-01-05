@@ -1,11 +1,24 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import ConfigParser
+import codecs
+import json
+import logging
+import os
+import platform
+import shutil
+from time import strftime
+
+log = logging.getLogger()
+
+DEBUG = True  # FIXME
 
 
 class Firefox(object):
     def __init__(self):
         log.info("Firefox initialization starting")
         self.os = platform.system().lower()
+
         self.path = None
         self.profile = None
         self.available_profiles = {}
@@ -270,3 +283,6 @@ class Firefox(object):
                 raise
             else:
                 return False
+
+if __name__ == '__main__':
+    pass
