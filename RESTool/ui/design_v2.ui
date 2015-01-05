@@ -22,11 +22,11 @@
      <number>3</number>
     </property>
     <item>
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="MainTabWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="BackupRestoreMigrateTab">
        <attribute name="title">
         <string>Backup/Restore/Migrate</string>
        </attribute>
@@ -55,7 +55,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QComboBox" name="FirstBrowserNameBox"/>
+               <widget class="QComboBox" name="cboFirstBrowser"/>
               </item>
               <item row="2" column="0">
                <widget class="QLabel" name="StaticProfileName">
@@ -65,7 +65,7 @@
                </widget>
               </item>
               <item row="2" column="1">
-               <widget class="QComboBox" name="FirstBrowserProfilesBox"/>
+               <widget class="QComboBox" name="cboFirstBrowserProfile"/>
               </item>
               <item row="3" column="0">
                <widget class="QLabel" name="StaticRESInfo">
@@ -84,7 +84,7 @@
              </layout>
             </item>
             <item>
-             <widget class="Line" name="line">
+             <widget class="Line" name="StaticBrowserDividerLine">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
@@ -121,10 +121,10 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QComboBox" name="SecondBrowserNameBox"/>
+               <widget class="QComboBox" name="cboSecondBrowser"/>
               </item>
               <item row="2" column="1">
-               <widget class="QComboBox" name="SecondBrowserProfilesBox"/>
+               <widget class="QComboBox" name="cboSecondBrowserProfile"/>
               </item>
               <item row="3" column="1">
                <widget class="QLabel" name="SecondBrowserRESLabel">
@@ -138,7 +138,7 @@
            </layout>
           </item>
           <item>
-           <widget class="Line" name="line_2">
+           <widget class="Line" name="StaticBrowserFeaturesLine">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -149,14 +149,14 @@
             <item>
              <layout class="QVBoxLayout" name="BackupsLayout">
               <item>
-               <widget class="QLabel" name="label">
+               <widget class="QLabel" name="StaticLabelMigrating">
                 <property name="text">
                  <string>Migrating existing data</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="btnFirstToSecond">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -166,7 +166,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_5">
+               <widget class="QPushButton" name="btnSecondToFirst">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -176,21 +176,21 @@
                </widget>
               </item>
               <item>
-               <widget class="Line" name="line_4">
+               <widget class="Line" name="StaticDivider">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_2">
+               <widget class="QLabel" name="StaticLabelBackups_2">
                 <property name="text">
                  <string>RES database backups</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_6">
+               <widget class="QPushButton" name="btnBackupFirst">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -200,7 +200,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="btnBackupSecond">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -210,7 +210,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="btnRestoreToFirst">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -220,7 +220,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="btnRestoreToSecond">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -230,7 +230,7 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer">
+               <spacer name="StaticDivider_2">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
@@ -243,7 +243,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="QLabel" name="label_3">
+               <widget class="QLabel" name="StaticLabelVersion">
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version 0.2dev - GitHub: &lt;a href=&quot;https://github.com/Nikola-K/RESTool&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Nikola-K/RESTool&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -282,7 +282,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="SettingsTab">
        <attribute name="title">
         <string>Settings</string>
        </attribute>
