@@ -2,6 +2,7 @@
 RESTool
 =======
 
+**For stable release please see download link below, the current master branch is for development only and may be broken and lead to loss of data!**
 
 Unofficial cross platform tool for migrating between browsers, backing up, and restoring from backups,
 "Reddit Enhancement Suite" aka RES settings.
@@ -66,27 +67,7 @@ Windows
 which you probably already have installed, but if you can not get the app to run
 try installing visual c++ 2008 redistributable from the link above.
 
-
-+--------------------+-------------+------------------------------+
-| Description        | Link        | Note                         |
-+====================+=============+==============================+
-| Pay $1.99 (PayPal) | paypal1_    | Use same link as             |
-+--------------------+-------------+ free download                |
-| Pay $4.99 (PayPal) | paypal2_    | for actually downloading     |
-+--------------------+-------------+ the software                 |
-| Pay $9.99 (PayPal) | paypal3_    |                              |
-+--------------------+-------------+------------------------------+
-| Free download      | releases_   |  (Windows exe, linux source) |
-+--------------------+-------------+------------------------------+
-
-
-.. _paypal1: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QL25GUJ62G6UL
-
-.. _paypal2: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=3TSJ7LSD5F8LG
-
-.. _paypal3: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=BXPXJB2QUDSY2
-
-.. _releases: https://github.com/Nikola-K/RESTool/releases
+You can find the latest stable build here: https://github.com/Nikola-K/RESTool/releases
 
 Windows Vista and up are supported. Tested on Windows 7 32bit.
 
@@ -95,7 +76,7 @@ Linux
 
 There is no binary provided for linux but the only requirements are Python 2.7 and pyqt, both of which
 are available in most distro repos. You can run the application, after installing pyqt, by simply downloading
-the source and running `RESTool_main.py` from your command line.
+the source from releases and running `RESTool_main.py` from your command line.
 
 Tested on xubuntu 32bit.
 
@@ -195,14 +176,6 @@ will be fixed.
 
 FAQs
 ====
-
-Q: What is the difference between paying and downloading this for free?
------------------------------------------------------------------------
-
-A: There is no difference. PayPal does not allow me to accept donations so on top of providing free downloads
-there is also option to pay for the application, paying supports further development and all users who pay $4.99 or more
-will receive any paid options for free that may be introduced in the future. There is no guarantee that those
-will be added but I am experimenting with automatic cloud backups.
 
 Q: Why is the windows .exe size so big?
 ---------------------------------------
