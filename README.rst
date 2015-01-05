@@ -57,9 +57,6 @@ Windows 7:
 Downloads
 =========
 
-You can pay for this software if you want; this helps fund the development
-but it is not required for using all available features. See FAQs_ for more info.
-
 Windows
 -------
 
