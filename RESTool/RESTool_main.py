@@ -168,7 +168,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if not self.first_browser:
             self.first_br_profile = None
             self.cboFirstBrowserProfile.setCurrentIndex(0)
-
         self._update_ui_elements()
 
     def _first_browser_profile_changed(self):
@@ -181,18 +180,46 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.second_br_profile = None
             self.cboSecondBrowserProfile.setCurrentIndex(0)
 
+
         self._update_ui_elements()
 
     def _second_browser_profile_changed(self):
         pass
 
     def _update_ui_elements(self):
+
+        if self.first_browser:
+            self.FirstBrowserRESLabel.setText("Yes" if
+                                              self.first_browser.res_exists
+                                              else "No")
+        else:
+            self.FirstBrowserRESLabel.setText("N/A")
+
+        if self.second_browser:
+            self.SecondBrowserRESLabel.setText("Yes" if
+                                               self.second_browser.res_exists
+                                               else "No")
+        else:
+            self.SecondBrowserRESLabel.setText("N/A")
+
         if not self.first_browser and not self.second_browser:
+            self.btnBackupFirst.setEnabled(False)
+            self.btnBackupSecond.setEnabled(False)
+            self.btnFirstToSecond.setEnabled(False)
+            self.btnSecondToFirst.setEnabled(False)
+            self.btnRestoreToFirst.setEnabled(False)
+            self.btnRestoreToSecond.setEnabled(False)
             return
 
         if type(self.first_browser) == type(self.second_browser):
             if self.first_br_profile == self.second_br_profile:
                 self._show_warning_label("Pick different browsers and/or profiles!")
+                self.btnBackupFirst.setEnabled(False)
+                self.btnBackupSecond.setEnabled(False)
+                self.btnFirstToSecond.setEnabled(False)
+                self.btnSecondToFirst.setEnabled(False)
+                self.btnRestoreToFirst.setEnabled(False)
+                self.btnRestoreToSecond.setEnabled(False)
                 return
 
         if self.labelMessage.isVisible():
