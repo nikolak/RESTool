@@ -97,6 +97,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         self._set_available_browsers()
         self._set_available_profiles()
+        self._update_backups_list()
 
     # noinspection PyCallByClass,PyTypeChecker
     def _warn(self, msg, title="Warnning"):
@@ -253,7 +254,12 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnRestoreToSecond.setEnabled(True)
 
     def _update_backups_list(self):
-        pass
+        self.listBackups.clear()
+        if not os.path.exists("res_backups"):
+            return
+        backup_files = os.listdir("res_backups")
+        for backup in backup_files:
+            self.listBackups.addItem(backup)
 
     def migrate_first_to_second(self):
         pass
