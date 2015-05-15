@@ -16,21 +16,49 @@
 # limitations under the License.
 
 import json
-import logging
 import os
 import platform
 import shutil
 import sqlite3
 from time import strftime
+import traceback
+import sys
 
-log = logging.getLogger()
+from logbook import FileHandler, Logger
 
-DEBUG = True  # FIXME
+from browser import Browser
+
+if os.path.exists("application.log"):
+    log_handler = FileHandler('application.log')
+    log_handler.push_application()
+log = Logger("Chrome")
 
 
-class Chrome(object):
+def extract_function_name():
+    """Extracts failing function name from Traceback
+
+    by Alex Martelli
+    http://stackoverflow.com/questions/2380073/\
+    how-to-identify-what-function-call-raise-an-exception-in-python
+    """
+    tb = sys.exc_info()[-1]
+    stk = traceback.extract_tb(tb, 1)
+    fname = stk[0][3]
+    return fname
+
+
+def log_exception(e):
+    log.critical(
+        "Function {function_name} raised {exception_class} ({exception_docstring}): {exception_message}".format(
+            function_name=extract_function_name(),
+            exception_class=e.__class__,
+            exception_docstring=e.__doc__,
+            exception_message=e.message))
+
+
+class Chrome(Browser):
     def __init__(self):
-        log.debug("Starting chrome initialization")
+        log.debug("Starting initialization")
         self.os = platform.system().lower()
 
         self.path = None
@@ -38,19 +66,8 @@ class Chrome(object):
         self.res_exists = self.path is not None
         pass
 
-    def _expand(self, path):
-        log.debug("Chrome expanding: {}".format(path))
-
-        if self.os == "linux":
-            return os.path.expanduser(path)
-        elif self.os == "windows" and platform.release() != "XP":
-            return os.path.expandvars(path)
-        else:
-            log.error("Unsupported OS: {} - expanding failed.".format(self.os))
-            return None
-
     def _find_res(self):
-        log.debug("Finding Chrome RES")
+        log.debug("searching for RES")
 
         # res_folder = None
         res_file = "chrome-extension_kbmfpngjjgdllneeigpgjifpgocmfgmb_0.localstorage"
@@ -88,18 +105,15 @@ class Chrome(object):
                 return None
 
         except AttributeError:
-            log.warn("Chrome joining failed for {} and {}".format(res_folder, res_file))
+            log.error("Joining failed for {} and {}".format(res_folder, res_file))
             return None
-        except:
-            if DEBUG:
-                raise
-            else:
-                return None
+        except Exception as e:
+            log_exception(e)
 
     def _backup_file(self, path, fname):
         log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
         if not os.path.exists(path):
-            log.eror("Path not found {}".format(path))
+            log.error("Path not found {}".format(path))
             return False
 
         if not os.path.exists("res_backups"):
@@ -122,11 +136,8 @@ class Chrome(object):
         except IOError:
             log.error("Copy failed due to IOError")
             return False
-        except:
-            if DEBUG:
-                raise
-            else:
-                return False
+        except Exception as e:
+            log_exception(e)
 
     def get_data(self, chrome_path=None):
         log.debug("Chrome get data")
@@ -162,13 +173,8 @@ class Chrome(object):
 
             log.info("Returning chrome data!")
             return chrome_data
-        except:
-            log.debug("Exception when converting data from chrome to firefox")
-            if DEBUG:
-                raise
-            else:
-                return None
-
+        except Exception as e:
+            log_exception(e)
 
     def set_data(self, json_data):
         log.info("Chrome setting data")
@@ -203,23 +209,18 @@ class Chrome(object):
             c.close()
             log.info("Setting chrome data complete!")
             return True
-        except:
-            log.debug("Exception when converting data from firefox to chrome")
-            if DEBUG:
-                raise
-            else:
-                return False
+        except Exception as e:
+            log.error("Exception when converting data from firefox to chrome")
+            log_exception(e)
 
     def backup(self):
         if self.path:
             fname = "chrome.{}.backup".format(strftime("%Y-%m-%d"))
             try:
                 return self._backup_file(self.path, fname)
-            except:
-                if DEBUG:
-                    raise
-                else:
-                    return False
+            except Exception as e:
+                log_exception(e)
+
         else:
             return False
 
@@ -232,12 +233,5 @@ class Chrome(object):
         try:
             shutil.copy(backup_path, self.path)
             return True
-        except:
-            if DEBUG:
-                raise
-            else:
-                return False
-
-
-if __name__ == '__main__':
-    pass
+        except Exception as e:
+            log_exception(e)
