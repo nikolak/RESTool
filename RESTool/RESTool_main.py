@@ -20,62 +20,43 @@ __email__ = 'nikolak@outlook.com'
 __version__ = '0.2.0dev'
 
 import os
-import ConfigParser
-import json
-import sqlite3
-import codecs
 import sys
 from PyQt4 import QtGui
-import webbrowser
-import platform
-import traceback
-import logging
-import shutil
-from time import strftime
 import copy
 from collections import OrderedDict
+
+from logbook import FileHandler, Logger
+
+if os.path.exists("application.log"):
+    log_handler = FileHandler('application.log')
+    log_handler.push_application()
+else:  # py2exe otherwise shows annoying popup if there's something in stderr
+    err = sys.stderr
+    out = sys.stdout
+    sys.stderr = out
+
+log = Logger("Main Qt")
 
 from browsers import Chrome, Firefox
 
 try:
     from RESTool import restoolgui
 except ImportError:
-    import restoolgui2
+    import restoolgui
 
-DEBUG = os.path.exists("log.txt")
-
-if not DEBUG:
-    err = sys.stderr
-    out = sys.stdout
-    sys.stderr = out  # disable stderr so that py2exe doesn't show that popup message
-
-log = logging.getLogger('RESToolGUI')
-
-if DEBUG:
-    log.setLevel(logging.DEBUG)
-    fh = logging.FileHandler('log.txt')
-    fh.setLevel(logging.DEBUG)
-
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    ch.setFormatter(formatter)
-    fh.setFormatter(formatter)
-    log.addHandler(ch)
-    log.addHandler(fh)
 
 class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
-
     # noinspection PyUnresolvedReferences
     def __init__(self, parent=None):
         super(RESToolUI, self).__init__(parent)
+        log.info("setting up")
         self.setupUi(self)
         self.labelMessage.setVisible(False)
 
-        self.choices_first = OrderedDict({"None":None})
-        self.choices_second = OrderedDict({"None":None})
-        self.profile_choices_first = OrderedDict({"None":None})
-        self.profile_choices_second = OrderedDict({"None":None})
+        self.choices_first = OrderedDict({"None": None})
+        self.choices_second = OrderedDict({"None": None})
+        self.profile_choices_first = OrderedDict({"None": None})
+        self.profile_choices_second = OrderedDict({"None": None})
 
         self.first_browser = None
         self.second_browser = None
@@ -92,7 +73,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         self.btnBackupFirst.clicked.connect(self.backup_first)
         self.btnBackupSecond.clicked.connect(self.backup_second)
-        self.btnRestoreToFirst.clicked.connect(self.resotre_to_first)
+        self.btnRestoreToFirst.clicked.connect(self.restore_to_first)
         self.btnBackupSecond.clicked.connect(self.restore_to_second)
 
         self._set_available_browsers()
@@ -138,7 +119,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         chrome = Chrome()
         firefox = Firefox()
 
-
         if chrome.res_exists:
             self.choices_first['Chrome'] = chrome
             self.choices_second['Chrome'] = copy.copy(chrome)
@@ -155,7 +135,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self._warn("RES could not be found in Firefox or Chrome!")
 
     def _set_available_profiles(self):
-        #TODO: Get real profiles and populate cbo
+        # TODO: Get real profiles and populate cbo
 
         for key in self.profile_choices_first:
             self.cboFirstBrowserProfile.addItem(key)
@@ -180,7 +160,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if not self.second_browser:
             self.second_br_profile = None
             self.cboSecondBrowserProfile.setCurrentIndex(0)
-
 
         self._update_ui_elements()
 
@@ -268,16 +247,19 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         pass
 
     def backup_first(self):
-        pass
+        self.first_browser.backup()
+        self._update_backups_list()
 
     def backup_second(self):
-        pass
+        self.second_browser.backup()
+        self._update_backups_list()
 
-    def resotre_to_first(self):
+    def restore_to_first(self):
         pass
 
     def restore_to_second(self):
         pass
+
 
 def main():
     app = QtGui.QApplication(sys.argv)
