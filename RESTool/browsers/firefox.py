@@ -18,20 +18,47 @@
 import ConfigParser
 import codecs
 import json
-import logging
 import os
 import platform
 import shutil
 from time import strftime
+import sys
+import traceback
 
-log = logging.getLogger()
+from logbook import FileHandler, Logger
 
-DEBUG = True  # FIXME
+from browser import Browser
+
+if os.path.exists("application.log"):
+    log_handler = FileHandler('application.log')
+    log_handler.push_application()
+log = Logger("Firefox")
+
+def extract_function_name():
+    """Extracts failing function name from Traceback
+
+    by Alex Martelli
+    http://stackoverflow.com/questions/2380073/\
+    how-to-identify-what-function-call-raise-an-exception-in-python
+    """
+    tb = sys.exc_info()[-1]
+    stk = traceback.extract_tb(tb, 1)
+    fname = stk[0][3]
+    return fname
 
 
-class Firefox(object):
+def log_exception(e):
+    log.critical(
+        "Function {function_name} raised {exception_class} ({exception_docstring}): {exception_message}".format(
+            function_name=extract_function_name(),
+            exception_class=e.__class__,
+            exception_docstring=e.__doc__,
+            exception_message=e.message))
+
+
+class Firefox(Browser):
     def __init__(self):
-        log.info("Firefox initialization starting")
+        log.info("Initialization starting")
         self.os = platform.system().lower()
 
         self.path = None
@@ -43,22 +70,11 @@ class Firefox(object):
 
         self.res_exists = self.path is not None
 
-    def _expand(self, path):
-        log.debug("Chrome expanding: {}".format(path))
-
-        if self.os == "linux":
-            return os.path.expanduser(path)
-        elif self.os == "windows" and platform.release() != "XP":
-            return os.path.expandvars(path)
-        else:
-            log.error("Unsupported OS: {} - expanding failed.".format(self.os))
-            return None
-
     def _find_res(self):
-        log.info("Firefox finding RES")
+        log.info("searching for RES")
 
         if not self.available_profiles:
-            log.debug("Profiles not found in _find_res, aborting")
+            log.info("Profiles not found in _find_res, aborting")
             return None
 
         for profile_name in self.available_profiles.keys():
@@ -158,20 +174,15 @@ class Firefox(object):
                 log.debug("Full firefox path exists")
                 return full_path
             else:
-                log.warn("Full firefox path does not exist. RES Not installed?")
+                log.error("Full firefox path does not exist. RES Not installed?")
                 return None
 
         except AttributeError:
-            log.warn("Firefox joining failed for {}, {} and {}".format(res_folder, ff_profile, res_file))
+            log.error("Firefox joining failed for {}, {} and {}".format(res_folder, ff_profile, res_file))
             return None
 
-        except:
-            log.error("Unhandeled exception")
-            if DEBUG:
-                raise
-            else:
-                return None
-
+        except Exception as e:
+            log_exception(e)
 
     def _backup_file(self, path, fname):
         log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
@@ -185,12 +196,9 @@ class Firefox(object):
             except IOError:
                 log.error("IOError encountered while trying to create res_backups folder. Aborting.")
                 return False
-            except:
-                log.error("Unahandeled exception occurred while trying to create res_bacups folder.")
-                if DEBUG:
-                    raise
-                else:
-                    pass
+            except Exception as e:
+                log.critical("Unahandeled exception occurred while trying to create res_bacups folder.")
+                log_exception(e)
 
         destination = os.path.join("res_backups", fname)
         log.debug("Source and destination exist. Trying to copy {} to {}".format(path, destination))
@@ -201,12 +209,8 @@ class Firefox(object):
         except IOError:
             log.error("Copy failed due to IOError")
             return False
-        except:
-            log.error("Unhandeled exception occured")
-            if DEBUG:
-                raise
-            else:
-                return False
+        except Exception as e:
+            log_exception(e)
 
     def change_profile(self, profile_name):
         log.info("Firefox changing profile to {}".format(profile_name))
@@ -245,12 +249,8 @@ class Firefox(object):
             else:
                 log.debug("ff_json contains some data")
                 return ff_json
-        except:
-            log.debug("Unhandeled exception occured")
-            if DEBUG:
-                raise
-            else:
-                pass
+        except Exception as e:
+            log_exception(e)
 
     def set_data(self, json_data):
         log.info("Firefox setting data")
@@ -264,23 +264,16 @@ class Firefox(object):
                 log.debug("Writing dump to firefox file")
                 firefox_out.write(json_data)
             return True
-        except:
-            log.error("Unhandeled exception")
-            if DEBUG:
-                raise
-            else:
-                return False
+        except Exception as e:
+            log_exception(e)
 
     def backup(self):
         if self.path:
             fname = "firefox.{}.backup".format(strftime("%Y-%m-%d"))
             try:
                 return self._backup_file(self.path, fname)
-            except:
-                if DEBUG:
-                    raise
-                else:
-                    return False
+            except Exception as e:
+                log_exception(e)
         else:
             return False
 
@@ -293,11 +286,9 @@ class Firefox(object):
         try:
             shutil.copy(backup_path, self.path)
             return True
-        except:
-            if DEBUG:
-                raise
-            else:
-                return False
+        except Exception as e:
+            log_exception(e)
+
 
 if __name__ == '__main__':
     pass
