@@ -115,12 +115,9 @@ class Firefox(Browser):
         except AttributeError:
             log.error("Joining folder and profiles.ini failed. Returning None")
             return {}
-        except:
-            log.error("Unhandeled exception")
-            if DEBUG:
-                raise
-            else:
-                return {}
+        except Exception as e:
+            log_exception(e)
+            return {}
 
         if not os.path.exists(profiles_path):
             # If profiles.ini does not exist no profile folder exists either
@@ -187,7 +184,7 @@ class Firefox(Browser):
     def _backup_file(self, path, fname):
         log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
         if not os.path.exists(path):
-            log.eror("Path not found {}".format(path))
+            log.error("Path not found {}".format(path))
             return False
 
         if not os.path.exists("res_backups"):
