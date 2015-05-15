@@ -34,6 +34,7 @@ if os.path.exists("application.log"):
     log_handler.push_application()
 log = Logger("Firefox")
 
+
 def extract_function_name():
     """Extracts failing function name from Traceback
 
@@ -178,34 +179,6 @@ class Firefox(Browser):
             log.error("Firefox joining failed for {}, {} and {}".format(res_folder, ff_profile, res_file))
             return None
 
-        except Exception as e:
-            log_exception(e)
-
-    def _backup_file(self, path, fname):
-        log.debug("Chrome _backup_file with path={} fname={}".format(path, fname))
-        if not os.path.exists(path):
-            log.error("Path not found {}".format(path))
-            return False
-
-        if not os.path.exists("res_backups"):
-            try:
-                os.makedirs("res_backups")
-            except IOError:
-                log.error("IOError encountered while trying to create res_backups folder. Aborting.")
-                return False
-            except Exception as e:
-                log.critical("Unahandeled exception occurred while trying to create res_bacups folder.")
-                log_exception(e)
-
-        destination = os.path.join("res_backups", fname)
-        log.debug("Source and destination exist. Trying to copy {} to {}".format(path, destination))
-        try:
-            shutil.copy(path, destination)
-            # TODO: self.update_backup_list()
-            return True
-        except IOError:
-            log.error("Copy failed due to IOError")
-            return False
         except Exception as e:
             log_exception(e)
 
