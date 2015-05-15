@@ -285,7 +285,3 @@ class Firefox(Browser):
             return True
         except Exception as e:
             log_exception(e)
-
-
-if __name__ == '__main__':
-    pass
