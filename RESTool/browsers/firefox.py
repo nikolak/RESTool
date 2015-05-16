@@ -148,7 +148,7 @@ class Firefox(Browser):
 
             if os.path.exists(full_path):
                 log.debug("Full firefox path exists")
-                return True
+                return full_path
             else:
                 log.error("Full firefox path does not exist. RES Not installed?")
                 return None
@@ -201,7 +201,7 @@ class Firefox(Browser):
             log.exception(e)
 
     def set_data(self, json_data):
-        log.info("Firefox setting data")
+        log.info("Firefox setting data to {}".format(self.path))
         if not json_data:
             log.debug("json_data empty, aborting.")
             # todo: verify json_data is valid RES data
