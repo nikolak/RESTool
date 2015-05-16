@@ -35,6 +35,7 @@ log = Logger("Chrome")
 class Chrome(Browser):
     def __init__(self):
         log.debug("Starting initialization")
+        self.name = "chrome"
         self.os = platform.system().lower()
 
         self.path = None
@@ -157,7 +158,7 @@ class Chrome(Browser):
             log.info("Setting chrome data complete!")
             return True
         except Exception as e:
-            log.error("Exception when converting data from firefox to chrome")
+            log.error("Exception when converting json data to chrome")
             log.exception(e)
 
     def backup(self):

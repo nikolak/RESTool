@@ -36,6 +36,7 @@ log = Logger("Firefox")
 class Firefox(Browser):
     def __init__(self):
         log.info("Initialization starting")
+        self.name = "firefox"
         self.os = platform.system().lower()
 
         self.path = None
@@ -146,7 +147,6 @@ class Firefox(Browser):
 
             if os.path.exists(full_path):
                 log.debug("Full firefox path exists")
-                raise ValueError("Test")
             else:
                 log.error("Full firefox path does not exist. RES Not installed?")
                 return None
