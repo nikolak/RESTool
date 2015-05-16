@@ -53,8 +53,8 @@ setup(
             "compressed": 1,
             "optimize": 1,
             },
-            {'py2app': {
-            'argv_emulation': True}
+            'py2app': {
+            'argv_emulation': True
             }
     },
     include_package_data=True,
