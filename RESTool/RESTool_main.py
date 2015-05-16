@@ -63,8 +63,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.first_br_profile = None
         self.second_br_profile = None
 
-        self.all_browsers = {"firefox":Firefox,
-                             "chrome":Chrome}
+        self.all_browsers = {"firefox": Firefox,
+                             "chrome": Chrome}
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
@@ -261,11 +261,37 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         for backup in backup_files:
             self.listBackups.addItem(backup)
 
+    def __migrate(self, from_browser, to_browser):
+        from_name = from_browser.name
+        to_name = to_browser.name
+        log.info("Migrating '{}' to '{}'".format(from_name, to_name))
+
+        if from_name == to_name:
+            if to_browser.restore_from_self(from_browser.path):
+                log.info("Migration done - restore_from_self returned True")
+                self._info("Migrating from {} to {} complete!".format(from_name, to_name))
+            else:
+                log.info("Migration failed - restore_from_self not True")
+                self._warn("Migrating data from {} to {} failed.".format(from_name, to_name))
+        else:
+            migration_data = from_browser.get_data()
+            if not migration_data:
+                log.warn("Did not get any data from first browser type {}".format(migration_data))
+                self._warn("Migrating data from {} to {} failed.".format(from_name, to_name))
+                return
+
+            if to_browser.set_data(migration_data):
+                log.info("Migration with set_data done successfully")
+                self._info("Migrating from {} to {} complete!".format(from_name, to_name))
+            else:
+                log.info("Migrating data with set_data failed.")
+                self._warn("Migrating data from {} to {} failed.".format(from_name, to_name))
+
     def migrate_first_to_second(self):
-        pass
+        self.__migrate(self.first_browser, self.second_browser)
 
     def migrate_second_to_first(self):
-        pass
+        self.__migrate(self.second_browser, self.first_browser)
 
     def backup_first(self):
         log.info("Backing up first browser")
@@ -291,7 +317,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         restore_format = browser.name
         backup_browser = selected_backup.split('.')[0]
-        backup_path =  os.path.join("res_backups", selected_backup)
+        backup_path = os.path.join("res_backups", selected_backup)
         log.debug("Selected backup:{}".format(selected_backup))
         log.debug("Restore format")
 
@@ -301,6 +327,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         elif backup_browser in self.all_browsers.keys():
             try:
                 restore_data = self.all_browsers[backup_browser]().get_data(backup_path)
+                if not restore_data:
+                    self._warn("Restoring failed due to internal exception.")
+                    return
             except Exception as e:
                 log.exception(e)
                 self._warn("Restoring failed due to internal exception.")
