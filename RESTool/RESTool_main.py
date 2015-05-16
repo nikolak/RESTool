@@ -135,13 +135,28 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self._warn("RES could not be found in Firefox or Chrome!")
 
     def _set_available_profiles(self):
-        # TODO: Get real profiles and populate cbo
+        first = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
+        second = self.choices_first.get(str(self.cboSecondBrowser.currentText()))
+        self.cboFirstBrowserProfile.clear()
+        self.cboSecondBrowserProfile.clear()
 
-        for key in self.profile_choices_first:
-            self.cboFirstBrowserProfile.addItem(key)
+        if first:
+            try:
+                for key in first.available_profiles:
+                    self.cboFirstBrowserProfile.addItem(key)
+            except:
+                self.cboFirstBrowserProfile.addItem("None")
+        else:
+            self.cboFirstBrowserProfile.addItem("None")
 
-        for key in self.profile_choices_second:
-            self.cboSecondBrowserProfile.addItem(key)
+        if second:
+            try:
+                for key in second.available_profiles:
+                    self.cboSecondBrowserProfile.addItem(key)
+            except:
+                self.cboSecondBrowserProfile.addItem("None")
+        else:
+            self.cboSecondBrowserProfile.addItem("None")
 
     def _first_browser_changed(self):
         self.first_browser = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
@@ -149,6 +164,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if not self.first_browser:
             self.first_br_profile = None
             self.cboFirstBrowserProfile.setCurrentIndex(0)
+        self._set_available_profiles()
         self._update_ui_elements()
 
     def _first_browser_profile_changed(self):
@@ -160,7 +176,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if not self.second_browser:
             self.second_br_profile = None
             self.cboSecondBrowserProfile.setCurrentIndex(0)
-
+        self._set_available_profiles()
         self._update_ui_elements()
 
     def _second_browser_profile_changed(self):
