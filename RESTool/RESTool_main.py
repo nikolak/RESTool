@@ -63,6 +63,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.first_br_profile = None
         self.second_br_profile = None
 
+        self.all_browsers = {"firefox":Firefox,
+                             "chrome":Chrome}
+
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
         self.cboSecondBrowser.currentIndexChanged.connect(self._second_browser_changed)
@@ -263,15 +266,44 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         pass
 
     def backup_first(self):
+        log.info("Backing up first browser")
         self.first_browser.backup()
         self._update_backups_list()
 
     def backup_second(self):
+        log.info("Backing up second browser")
         self.second_browser.backup()
         self._update_backups_list()
 
     def restore_to_first(self):
-        pass
+        log.info("Restoring backup to first")
+        try:
+            selected_backup = str(self.listBackups.selectedItems()[0].text())
+        except IndexError:
+            self._warn("No backup file selected.")
+            return
+
+        restore_format = str(self.cboFirstBrowser.currentText()).lower()
+        backup_browser = selected_backup.split('.')[0]
+        backup_path =  os.path.join("res_backups", selected_backup)
+        log.debug("Selected backup:{}".format(selected_backup))
+        log.debug("Restore format")
+
+        if backup_browser == restore_format:
+            if not self.first_browser.restore_from_self(backup_path):
+                self._warn("Restoring from same browser backup format failed.")
+        elif backup_browser in self.all_browsers.keys():
+            try:
+                restore_data = self.all_browsers[backup_browser]().get_data(backup_path)
+            except Exception as e:
+                log.exception(e)
+                self._warn("Restoring failed due to internal exception.")
+                return
+
+            if not self.first_browser.set_data(restore_data):
+                self._warn("Restoring from a different browser failed.")
+        else:
+            self._warn("Unknown backup format.")
 
     def restore_to_second(self):
         pass
