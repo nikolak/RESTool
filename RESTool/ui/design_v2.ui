@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>583</width>
-    <height>472</height>
+    <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
       </property>
       <widget class="QWidget" name="BackupRestoreMigrateTab">
        <attribute name="title">
-        <string>Backup/Restore/Migrate</string>
+        <string>RESTool</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>

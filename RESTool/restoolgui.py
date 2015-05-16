@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Sat May 16 09:17:10 2015
+# Created: Sat May 16 15:09:34 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(583, 472)
+        MainWindow.resize(583, 482)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -217,6 +217,6 @@ class Ui_MainWindow(object):
         item = self.listBackups.item(1)
         item.setText(_translate("MainWindow", "Firefox 2015-12-31-1958.backup", None))
         self.listBackups.setSortingEnabled(__sortingEnabled)
-        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BackupRestoreMigrateTab), _translate("MainWindow", "Backup/Restore/Migrate", None))
+        self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BackupRestoreMigrateTab), _translate("MainWindow", "RESTool", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.SettingsTab), _translate("MainWindow", "Settings", None))
 
