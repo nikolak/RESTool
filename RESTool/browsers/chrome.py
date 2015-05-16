@@ -66,21 +66,21 @@ class Chrome(Browser):
             log.error("Unsupported OS. Returning None")
             return None
 
-        log.debug("Chrome res_folder set to : {}".format(res_folder))
+        log.debug("res_folder set to : {}".format(res_folder))
 
         if not os.path.exists(res_folder):
-            log.error("Selected chrome folder does not exist")
+            log.error("Selected folder does not exist")
             return None
 
         try:
             full_path = os.path.join(res_folder, res_file)
-            log.debug("Full chrome path set to {}".format(full_path))
+            log.debug("Full path set to {}".format(full_path))
 
             if os.path.exists(full_path):
                 log.debug("Full chrome path exists")
                 return full_path
             else:
-                log.warn("Full chrome path does not exist. RES Not installed?")
+                log.warn("Full path does not exist. RES Not installed?")
                 return None
 
         except AttributeError:
@@ -89,25 +89,25 @@ class Chrome(Browser):
         except Exception as e:
             log.exception(e)
 
-    def get_data(self, chrome_path=None):
-        log.debug("Chrome get data")
+    def get_data(self, file_path=None):
+        log.debug("get_data")
 
-        if not chrome_path:
-            chrome_path = self.path
+        if not file_path:
+            file_path = self.path
 
-        if chrome_path is None:
-            log.error("Chrome path invalid")
+        if file_path is None:
+            log.error("path invalid")
             return None
 
-        log.debug("Chrome path set to: {}".format(chrome_path))
+        log.debug("path set to: {}".format(file_path))
 
-        if not os.path.exists(chrome_path):
-            log.debug("chrome_path refers to an invalid location")
+        if not os.path.exists(file_path):
+            log.debug("file_path refers to an invalid location")
             return None
 
         try:
             log.debug("Connecting to database.")
-            con = sqlite3.connect(chrome_path)
+            con = sqlite3.connect(file_path)
             c = con.cursor()
             log.debug("Executing SELECT query")
             db = c.execute('SELECT key, CAST(value AS TEXT) FROM ItemTable').fetchall()
@@ -121,13 +121,13 @@ class Chrome(Browser):
             log.debug("Creating dict dump")
             chrome_data = json.dumps(dict(db))
 
-            log.info("Returning chrome data!")
+            log.info("Returning data!")
             return chrome_data
         except Exception as e:
             log.exception(e)
 
     def set_data(self, json_data):
-        log.info("Chrome setting data")
+        log.info("set_data")
         if not json_data:
             log.debug("json_data empty, aborting.")
             # todo: verify json_data is valid RES data
@@ -157,7 +157,7 @@ class Chrome(Browser):
             conn.commit()
             log.debug("Changes committed. Closing database")
             c.close()
-            log.info("Setting chrome data complete!")
+            log.info("Setting data complete!")
             return True
         except Exception as e:
             log.error("Exception when converting json data to chrome")
