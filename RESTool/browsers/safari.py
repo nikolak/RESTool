@@ -46,7 +46,7 @@ class Safari(Browser):
         log.debug("searching for RES")
 
         if self.os == "darwin":
-            res_folder = self._expand("~/Library/Application Support/Google/Chrome/Default/Local Storage/")
+            res_folder = self._expand("~/Library/Safari/LocalStorage/")
         else:
             log.error("Unsupported OS. Returning None")
             return None
