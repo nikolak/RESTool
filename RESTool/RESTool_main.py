@@ -37,7 +37,7 @@ else:  # py2exe otherwise shows annoying popup if there's something in stderr
 
 log = Logger("Main Qt")
 
-from browsers import Chrome, Firefox
+from browsers import Chrome, Firefox, Safari
 
 try:
     from RESTool import restoolgui
@@ -64,7 +64,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.second_br_profile = None
 
         self.all_browsers = {"firefox": Firefox,
-                             "chrome": Chrome}
+                             "chrome": Chrome,
+                             "safari": Safari}
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
@@ -121,6 +122,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     def _set_available_browsers(self):
         chrome = Chrome()
         firefox = Firefox()
+        safari = Safari()
 
         if chrome.res_exists:
             self.choices_first['Chrome'] = chrome
@@ -129,6 +131,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if firefox.res_exists:
             self.choices_first['Firefox'] = firefox
             self.choices_second['Firefox'] = copy.copy(firefox)
+        
+        if safari.res_exists:
+            self.choices_first['Safari'] = safari
+            self.choices_second['Safari'] = copy.copy(safari)
 
         for browser_name in self.choices_first:
             self.cboFirstBrowser.addItem(browser_name)
