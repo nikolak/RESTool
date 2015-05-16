@@ -34,52 +34,79 @@
         <item>
          <layout class="QVBoxLayout" name="MainContentLayout" stretch="30,0,0,70">
           <item>
-           <layout class="QHBoxLayout" name="BrowseerPickerLayout" stretch="50,0,50">
+           <layout class="QHBoxLayout" name="BrowseerPickerLayout" stretch="45,5,45">
             <item>
-             <layout class="QFormLayout" name="FirstBrowserLayout">
-              <property name="fieldGrowthPolicy">
-               <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+             <layout class="QHBoxLayout" name="FirstBrowserLayout">
+              <property name="spacing">
+               <number>0</number>
               </property>
-              <item row="0" column="0">
-               <widget class="QLabel" name="StaticLabelInfo">
-                <property name="text">
-                 <string>First Browser:</string>
+              <item>
+               <layout class="QVBoxLayout" name="FirstBrowserVerticalLayout" stretch="0,0,0,0">
+                <property name="spacing">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="StaticBrowserName">
-                <property name="text">
-                 <string>Browser Name:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="cboFirstBrowser"/>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="StaticProfileName">
-                <property name="text">
-                 <string>Profile Name</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="1">
-               <widget class="QComboBox" name="cboFirstBrowserProfile"/>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="StaticRESInfo">
-                <property name="text">
-                 <string>RES DB found:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="FirstBrowserRESLabel">
-                <property name="text">
-                 <string>N/A</string>
-                </property>
-               </widget>
+                <item>
+                 <widget class="QLabel" name="StaticFirstBrowserLabel">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>First Browser</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="FirstBrowserNameLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticBrowserName">
+                    <property name="text">
+                     <string>Browser Name:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="cboFirstBrowser"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="FirstBrowserProfileLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticProfileName">
+                    <property name="text">
+                     <string>Profile Name:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="cboFirstBrowserProfile"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="FirstBrowserDBFoundLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticRESInfo">
+                    <property name="text">
+                     <string>RES DB found:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="FirstBrowserRESLabel">
+                    <property name="text">
+                     <string>N/A</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
@@ -91,47 +118,74 @@
              </widget>
             </item>
             <item>
-             <layout class="QFormLayout" name="SecondBrowserLayout">
-              <item row="0" column="0">
-               <widget class="QLabel" name="StaticLabelInfo_2">
-                <property name="text">
-                 <string>Second Browser:</string>
+             <layout class="QHBoxLayout" name="SecondBrowserLayout">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
+                <property name="spacing">
+                 <number>0</number>
                 </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QLabel" name="StaticBrowserName_2">
-                <property name="text">
-                 <string>Browser Name:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QLabel" name="StaticProfileName_2">
-                <property name="text">
-                 <string>Profile Name:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QLabel" name="StaticRESInfo_2">
-                <property name="text">
-                 <string>RES DB found:</string>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="1">
-               <widget class="QComboBox" name="cboSecondBrowser"/>
-              </item>
-              <item row="2" column="1">
-               <widget class="QComboBox" name="cboSecondBrowserProfile"/>
-              </item>
-              <item row="3" column="1">
-               <widget class="QLabel" name="SecondBrowserRESLabel">
-                <property name="text">
-                 <string>N/A</string>
-                </property>
-               </widget>
+                <item>
+                 <widget class="QLabel" name="StaticSecondBrowserLabel">
+                  <property name="font">
+                   <font>
+                    <italic>true</italic>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>Second Browser</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="SecondBrowserNameLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticBrowserName_2">
+                    <property name="text">
+                     <string>Browser Name:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="cboSecondBrowser"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="SecondBrowserProfileLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticProfileName_2">
+                    <property name="text">
+                     <string>Profile Name:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="cboSecondBrowserProfile"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="SecondBrowserDBFoundLayout" stretch="40,60">
+                  <item>
+                   <widget class="QLabel" name="StaticRESInfo_2">
+                    <property name="text">
+                     <string>RES DB found:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="SecondBrowserRESLabel">
+                    <property name="text">
+                     <string>N/A</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
               </item>
              </layout>
             </item>
