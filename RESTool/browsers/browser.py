@@ -16,36 +16,14 @@
 import os
 import platform
 import shutil
-import traceback
 
 from logbook import FileHandler, Logger
-import sys
 
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
 log = Logger("Browser")
 
-def extract_function_name():
-    """Extracts failing function name from Traceback
-
-    by Alex Martelli
-    http://stackoverflow.com/questions/2380073/\
-    how-to-identify-what-function-call-raise-an-exception-in-python
-    """
-    tb = sys.exc_info()[-1]
-    stk = traceback.extract_tb(tb, 1)
-    fname = stk[0][3]
-    return fname
-
-
-def log_exception(e):
-    log.critical(
-        "Function {function_name} raised {exception_class} ({exception_docstring}): {exception_message}".format(
-            function_name=extract_function_name(),
-            exception_class=e.__class__,
-            exception_docstring=e.__doc__,
-            exception_message=e.message))
 
 class Browser(object):
     def _expand(self, path):
@@ -85,4 +63,4 @@ class Browser(object):
             log.error("Copy failed due to IOError")
             return False
         except Exception as e:
-            log_exception(e)
+            log.exception(e)

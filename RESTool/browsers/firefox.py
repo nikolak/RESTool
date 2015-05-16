@@ -22,8 +22,6 @@ import os
 import platform
 import shutil
 from time import strftime
-import sys
-import traceback
 
 from logbook import FileHandler, Logger
 
@@ -33,28 +31,6 @@ if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
 log = Logger("Firefox")
-
-
-def extract_function_name():
-    """Extracts failing function name from Traceback
-
-    by Alex Martelli
-    http://stackoverflow.com/questions/2380073/\
-    how-to-identify-what-function-call-raise-an-exception-in-python
-    """
-    tb = sys.exc_info()[-1]
-    stk = traceback.extract_tb(tb, 1)
-    fname = stk[0][3]
-    return fname
-
-
-def log_exception(e):
-    log.critical(
-        "Function {function_name} raised {exception_class} ({exception_docstring}): {exception_message}".format(
-            function_name=extract_function_name(),
-            exception_class=e.__class__,
-            exception_docstring=e.__doc__,
-            exception_message=e.message))
 
 
 class Firefox(Browser):
@@ -117,7 +93,7 @@ class Firefox(Browser):
             log.error("Joining folder and profiles.ini failed. Returning None")
             return {}
         except Exception as e:
-            log_exception(e)
+            log.exception(e)
             return {}
 
         if not os.path.exists(profiles_path):
@@ -170,7 +146,7 @@ class Firefox(Browser):
 
             if os.path.exists(full_path):
                 log.debug("Full firefox path exists")
-                return full_path
+                raise ValueError("Test")
             else:
                 log.error("Full firefox path does not exist. RES Not installed?")
                 return None
@@ -180,7 +156,7 @@ class Firefox(Browser):
             return None
 
         except Exception as e:
-            log_exception(e)
+            log.exception(e)
 
     def change_profile(self, profile_name):
         log.info("Firefox changing profile to {}".format(profile_name))
@@ -220,7 +196,7 @@ class Firefox(Browser):
                 log.debug("ff_json contains some data")
                 return ff_json
         except Exception as e:
-            log_exception(e)
+            log.exception(e)
 
     def set_data(self, json_data):
         log.info("Firefox setting data")
@@ -235,7 +211,7 @@ class Firefox(Browser):
                 firefox_out.write(json_data)
             return True
         except Exception as e:
-            log_exception(e)
+            log.exception(e)
 
     def backup(self):
         if self.path:
@@ -243,7 +219,7 @@ class Firefox(Browser):
             try:
                 return self._backup_file(self.path, fname)
             except Exception as e:
-                log_exception(e)
+                log.exception(e)
         else:
             return False
 
@@ -257,4 +233,4 @@ class Firefox(Browser):
             shutil.copy(backup_path, self.path)
             return True
         except Exception as e:
-            log_exception(e)
+            log.exception(e)
