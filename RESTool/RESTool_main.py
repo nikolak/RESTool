@@ -149,7 +149,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             try:
                 for key in first.available_profiles:
                     self.cboFirstBrowserProfile.addItem(key)
-            except:
+            except AttributeError:
                 self.cboFirstBrowserProfile.addItem("None")
         else:
             self.cboFirstBrowserProfile.addItem("None")
@@ -158,7 +158,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             try:
                 for key in second.available_profiles:
                     self.cboSecondBrowserProfile.addItem(key)
-            except:
+            except AttributeError:
                 self.cboSecondBrowserProfile.addItem("None")
         else:
             self.cboSecondBrowserProfile.addItem("None")
