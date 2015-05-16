@@ -293,19 +293,22 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     def migrate_second_to_first(self):
         self.__migrate(self.second_browser, self.first_browser)
 
-    def backup_first(self):
-        log.info("Backing up first browser")
-        if self.first_browser.backup():
+    def __backup(self, browser):
+        log.info("Backing up {}".format(browser.name))
+
+        if not browser:
+            return
+
+        if browser.backup():
             self._update_backups_list()
         else:
             self._warn("Backing up failed.")
 
+    def backup_first(self):
+        self.__backup(self.first_browser)
+
     def backup_second(self):
-        log.info("Backing up second browser")
-        if self.second_browser.backup():
-            self._update_backups_list()
-        else:
-            self._warn("Backing up failed.")
+        self.__backup(self.second_browser)
 
     def __restore(self, browser):
         log.info("Restoring backup to {}".format(browser))
