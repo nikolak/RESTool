@@ -178,6 +178,7 @@ class Firefox(Browser):
             return False
 
         self.path = self._get_res(profile_name)
+        self.res_exists = self.path is not None
 
     def get_data(self, firefox_path=None):
         log.debug("Firefox get data")
