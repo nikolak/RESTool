@@ -47,6 +47,7 @@ class Firefox(Browser):
         self.path = self._find_res()
 
         self.res_exists = self.path is not None
+        log.info("RES exists {}".format(self.res_exists))
 
     def _find_res(self):
         log.info("searching for RES")
@@ -147,6 +148,7 @@ class Firefox(Browser):
 
             if os.path.exists(full_path):
                 log.debug("Full firefox path exists")
+                return True
             else:
                 log.error("Full firefox path does not exist. RES Not installed?")
                 return None
