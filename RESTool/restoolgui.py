@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'ui/design_v2.ui'
+# Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Mon Jan  5 21:40:19 2015
-#      by: PyQt4 UI code generator 4.10.4
+# Created: Sat May 16 09:17:10 2015
+#      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -107,6 +107,7 @@ class Ui_MainWindow(object):
         self.MainContentLayout.addWidget(self.StaticBrowserFeaturesLine)
         self.labelMessage = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.labelMessage.setEnabled(True)
+        self.labelMessage.setStyleSheet(_fromUtf8("color: rgb(255, 0, 0);"))
         self.labelMessage.setFrameShape(QtGui.QFrame.NoFrame)
         self.labelMessage.setAlignment(QtCore.Qt.AlignCenter)
         self.labelMessage.setObjectName(_fromUtf8("labelMessage"))
@@ -191,7 +192,7 @@ class Ui_MainWindow(object):
         self.StaticLabelInfo.setText(_translate("MainWindow", "First Browser:", None))
         self.StaticBrowserName.setText(_translate("MainWindow", "Browser Name:", None))
         self.StaticProfileName.setText(_translate("MainWindow", "Profile Name", None))
-        self.StaticRESInfo.setText(_translate("MainWindow", "RES DB found::", None))
+        self.StaticRESInfo.setText(_translate("MainWindow", "RES DB found:", None))
         self.FirstBrowserRESLabel.setText(_translate("MainWindow", "N/A", None))
         self.StaticLabelInfo_2.setText(_translate("MainWindow", "Second Browser:", None))
         self.StaticBrowserName_2.setText(_translate("MainWindow", "Browser Name:", None))
