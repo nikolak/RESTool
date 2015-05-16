@@ -141,8 +141,14 @@ class Chrome(Browser):
             # todo fetchone to verify it's a valid RES database
 
             log.debug("Generating list of key, value tuples")
-            ff_data = [(key, value) for key, value in json_data.items()]
-            log.debug("Tuples generated. Count: {}".format(len(ff_data)))
+            res_data = [(key, value) for key, value in json_data.items()]
+            log.debug("Tuples generated. Count: {}".format(len(res_data)))
+            log.debug("Checking tuple types")
+            for t in res_data:
+                if not all(isinstance(i, str) for i in t):
+                    log.critical("Not all items in res_data are strings. Aborting")
+                    log.debug(t)
+                    return
 
             log.debug("Executing DROP TABLE")
             c.execute("DROP TABLE ItemTable;")
@@ -151,7 +157,7 @@ class Chrome(Browser):
             c.execute("CREATE TABLE ItemTable (key TEXT, value TEXT);")
 
             log.debug("Creating table done. Inserting data from json_data into the database")
-            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', ff_data)
+            c.executemany('INSERT OR IGNORE INTO ItemTable (key,value) VALUES(?,?)', res_data)
             # fixme: 'OR IGNORE' needed?
 
             log.debug("Inserting data done. Committing changes")
