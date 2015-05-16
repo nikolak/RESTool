@@ -29,7 +29,7 @@ class Browser(object):
     def _expand(self, path):
         log.debug("Expanding: {}".format(path))
 
-        if self.os == "linux":
+        if self.os == "linux" or self.os == "darwin":
             return os.path.expanduser(path)
         elif self.os == "windows" and platform.release() != "XP":
             return os.path.expandvars(path)

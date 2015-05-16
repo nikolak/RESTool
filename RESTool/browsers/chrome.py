@@ -46,7 +46,6 @@ class Chrome(Browser):
     def _find_res(self):
         log.debug("searching for RES")
 
-        # res_folder = None
         res_file = "chrome-extension_kbmfpngjjgdllneeigpgjifpgocmfgmb_0.localstorage"
 
         if self.os == 'linux':
@@ -59,6 +58,9 @@ class Chrome(Browser):
 
             # todo: Check if it's possible for folder to be in %APPDATA% instead
             res_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome\\User Data\\Default\\Local Storage\\")
+
+        elif self.os == "darwin":
+            res_folder = self._expand("~/Library/Application Support/Google/Chrome/Default/Local Storage/")
 
         else:
             log.error("Unsupported OS. Returning None")

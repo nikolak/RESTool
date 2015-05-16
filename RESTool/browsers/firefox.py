@@ -78,6 +78,11 @@ class Firefox(Browser):
 
             profiles_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
 
+        elif self.os == "darwin":
+            profiles_folder = self._expand("~/Library/Mozilla/Firefox/")
+            if not os.path.exists(profiles_folder):
+                profiles_folder = self._expand("~/Library/Application Support/Firefox/")
+
         else:
             log.error("Unsupported OS. Returning None")
             return None
@@ -135,6 +140,11 @@ class Firefox(Browser):
                 return None
 
             res_folder = self._expand("%APPDATA%\\Mozilla\\Firefox\\")
+
+        elif self.os == "darwin":
+            res_folder = self._expand("~/Library/Mozilla/Firefox/")
+            if not os.path.exists(res_folder):
+                res_folder = self._expand("~/Library/Application Support/Firefox/")
 
         else:
             log.error("Unsupported OS: {} Returning None".format(self.os))
