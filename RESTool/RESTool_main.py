@@ -269,13 +269,17 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
     def backup_first(self):
         log.info("Backing up first browser")
-        self.first_browser.backup()
-        self._update_backups_list()
+        if self.first_browser.backup():
+            self._update_backups_list()
+        else:
+            self._warn("Backing up failed.")
 
     def backup_second(self):
         log.info("Backing up second browser")
-        self.second_browser.backup()
-        self._update_backups_list()
+        if self.second_browser.backup():
+            self._update_backups_list()
+        else:
+            self._warn("Backing up failed.")
 
     def __restore(self, browser):
         log.info("Restoring backup to {}".format(browser))
