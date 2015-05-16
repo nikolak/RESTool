@@ -134,6 +134,7 @@ class Chrome(Browser):
             return False
 
         try:
+            json_data = json.loads(json_data)
             log.debug("Connecting to database...")
             conn = sqlite3.connect(self.path)
             c = conn.cursor()

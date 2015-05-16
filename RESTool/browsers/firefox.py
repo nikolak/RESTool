@@ -206,7 +206,7 @@ class Firefox(Browser):
                 return None
             else:
                 log.debug("ff_json contains some data")
-                return ff_json
+                return json.dumps(ff_json)
         except Exception as e:
             log.exception(e)
 
