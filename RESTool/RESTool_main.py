@@ -77,7 +77,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnBackupFirst.clicked.connect(self.backup_first)
         self.btnBackupSecond.clicked.connect(self.backup_second)
         self.btnRestoreToFirst.clicked.connect(self.restore_to_first)
-        self.btnBackupSecond.clicked.connect(self.restore_to_second)
+        self.btnRestoreToSecond.clicked.connect(self.restore_to_second)
 
         self._set_available_browsers()
         self._set_available_profiles()
@@ -134,8 +134,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.cboFirstBrowser.addItem(browser_name)
             self.cboSecondBrowser.addItem(browser_name)
 
+        log.info("Available choices first {}".format(self.choices_first))
+
         if not self.choices_first:
-            self._warn("RES could not be found in Firefox or Chrome!")
+            self._warn("RES could not be found in neither Firefox nor Chrome!")
 
     def _set_available_profiles(self):
         first = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
@@ -275,22 +277,22 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.second_browser.backup()
         self._update_backups_list()
 
-    def restore_to_first(self):
-        log.info("Restoring backup to first")
+    def __restore(self, browser):
+        log.info("Restoring backup to {}".format(browser))
         try:
             selected_backup = str(self.listBackups.selectedItems()[0].text())
         except IndexError:
             self._warn("No backup file selected.")
             return
 
-        restore_format = str(self.cboFirstBrowser.currentText()).lower()
+        restore_format = browser.name
         backup_browser = selected_backup.split('.')[0]
         backup_path =  os.path.join("res_backups", selected_backup)
         log.debug("Selected backup:{}".format(selected_backup))
         log.debug("Restore format")
 
         if backup_browser == restore_format:
-            if not self.first_browser.restore_from_self(backup_path):
+            if not browser.restore_from_self(backup_path):
                 self._warn("Restoring from same browser backup format failed.")
         elif backup_browser in self.all_browsers.keys():
             try:
@@ -300,13 +302,16 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 self._warn("Restoring failed due to internal exception.")
                 return
 
-            if not self.first_browser.set_data(restore_data):
+            if not browser.set_data(restore_data):
                 self._warn("Restoring from a different browser failed.")
         else:
             self._warn("Unknown backup format.")
 
+    def restore_to_first(self):
+        self.__restore(self.first_browser)
+
     def restore_to_second(self):
-        pass
+        self.__restore(self.second_browser)
 
 
 def main():
