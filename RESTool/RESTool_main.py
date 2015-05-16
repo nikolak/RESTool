@@ -55,13 +55,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         self.choices_first = OrderedDict({"None": None})
         self.choices_second = OrderedDict({"None": None})
-        self.profile_choices_first = OrderedDict({"None": None})
-        self.profile_choices_second = OrderedDict({"None": None})
 
         self.first_browser = None
         self.second_browser = None
-        self.first_br_profile = None
-        self.second_br_profile = None
 
         self.all_browsers = {"firefox": Firefox,
                              "chrome": Chrome,
@@ -81,7 +77,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnRestoreToSecond.clicked.connect(self.restore_to_second)
 
         self._set_available_browsers()
-        self._set_available_profiles()
+        self._set_available_profiles(True, True)
         self._update_backups_list()
 
     # noinspection PyCallByClass,PyTypeChecker
@@ -116,10 +112,12 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         QtGui.QMessageBox.critical(self, title, msg, QtGui.QMessageBox.Ok)
 
     def _show_warning_label(self, msg):
+        log.debug("_show_warning_label")
         self.labelMessage.setText(msg)
         self.labelMessage.setVisible(True)
 
     def _set_available_browsers(self):
+        log.debug("_set_available_browsers")
         chrome = Chrome()
         firefox = Firefox()
         safari = Safari()
@@ -150,53 +148,75 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if not self.choices_first:
             self._warn("RES could not be found in neither Firefox nor Chrome!")
 
-    def _set_available_profiles(self):
+    def _set_available_profiles(self, for_first, for_second):
+        log.debug("_set_available_profiles")
         first = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
         second = self.choices_first.get(str(self.cboSecondBrowser.currentText()))
-        self.cboFirstBrowserProfile.clear()
-        self.cboSecondBrowserProfile.clear()
 
-        if first:
-            try:
-                for key in first.available_profiles:
-                    self.cboFirstBrowserProfile.addItem(key)
-            except AttributeError:
+        if for_first:
+            self.cboFirstBrowserProfile.clear()
+            if first:
+                try:
+                    for key in first.available_profiles:
+                        self.cboFirstBrowserProfile.addItem(key)
+                except AttributeError:
+                    self.cboFirstBrowserProfile.addItem("None")
+            else:
                 self.cboFirstBrowserProfile.addItem("None")
-        else:
-            self.cboFirstBrowserProfile.addItem("None")
 
-        if second:
-            try:
-                for key in second.available_profiles:
-                    self.cboSecondBrowserProfile.addItem(key)
-            except AttributeError:
+        if for_second:
+            self.cboSecondBrowserProfile.clear()
+            if second:
+                try:
+                    for key in second.available_profiles:
+                        self.cboSecondBrowserProfile.addItem(key)
+                except AttributeError:
+                    self.cboSecondBrowserProfile.addItem("None")
+            else:
                 self.cboSecondBrowserProfile.addItem("None")
-        else:
-            self.cboSecondBrowserProfile.addItem("None")
 
     def _first_browser_changed(self):
+        log.debug("_first_browser_changed")
         self.first_browser = self.choices_first.get(str(self.cboFirstBrowser.currentText()))
 
         if not self.first_browser:
-            self.first_br_profile = None
             self.cboFirstBrowserProfile.setCurrentIndex(0)
-        self._set_available_profiles()
+        self._set_available_profiles(for_first=True, for_second=False)
         self._update_ui_elements()
 
     def _first_browser_profile_changed(self):
-        pass
+        profile_name = str(self.cboFirstBrowserProfile.currentText())
+        log.debug("Changing first browser profile to {}".format(profile_name))
+        if profile_name == "None":
+            return
+
+        try:
+            self.first_browser.change_profile(profile_name)
+            self._update_ui_elements()
+        except:
+            log.warn("Browser does not support changing profiles.")
 
     def _second_browser_changed(self):
+        log.debug("_second_browser_changed")
         self.second_browser = self.choices_second.get(str(self.cboSecondBrowser.currentText()))
 
         if not self.second_browser:
             self.second_br_profile = None
             self.cboSecondBrowserProfile.setCurrentIndex(0)
-        self._set_available_profiles()
+        self._set_available_profiles(for_first=False, for_second=True)
         self._update_ui_elements()
 
     def _second_browser_profile_changed(self):
-        pass
+        profile_name = str(self.cboSecondBrowserProfile.currentText())
+        log.debug("Changing second browser profile to {}".format(profile_name))
+        if profile_name == "None":
+            return
+
+        try:
+            self.second_browser.change_profile(profile_name)
+            self._update_ui_elements()
+        except:
+            log.warn("Browser does not support changing profiles.")
 
     def _update_ui_elements(self):
 
@@ -224,7 +244,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             return
 
         if type(self.first_browser) == type(self.second_browser):
-            if self.first_br_profile == self.second_br_profile:
+            if str(self.cboFirstBrowserProfile.currentText()) == \
+                    str(self.cboSecondBrowserProfile.currentText()):
                 self._show_warning_label("Pick different browsers and/or profiles!")
                 self.btnBackupFirst.setEnabled(False)
                 self.btnBackupSecond.setEnabled(False)
@@ -237,7 +258,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         if self.labelMessage.isVisible():
             self.labelMessage.setVisible(False)
 
-        if self.first_browser and not self.second_browser:
+        if (self.first_browser and not self.second_browser) or \
+                (self.first_browser.res_exists and not self.second_browser.res_exists):
             self.btnBackupFirst.setEnabled(True)
             self.btnRestoreToFirst.setEnabled(True)
 
@@ -247,7 +269,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.btnSecondToFirst.setEnabled(False)
             return
 
-        if self.second_browser and not self.first_browser:
+        if (self.second_browser and not self.first_browser) or \
+                (self.second_browser.res_exists and not self.first_browser.res_exists):
             self.btnBackupSecond.setEnabled(True)
             self.btnRestoreToSecond.setEnabled(True)
 
