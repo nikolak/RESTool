@@ -135,7 +135,7 @@ class Firefox(Browser):
             name = profiles.get(profiles.sections()[index], 'Name')
             path = profiles.get(profiles.sections()[index], 'Path')
             available_profiles[name] = path
-
+        log.debug("Profiles:{}".format(available_profiles))
         return available_profiles
 
     def _get_res(self, profile_name):
