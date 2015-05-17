@@ -3,12 +3,30 @@
 History
 -------
 
-0.2.0dev (Current master branch)
---------------------------------
+0.2.0 (2015-05-17)
+------------------
 
 New features:
 
-* CLI Support (in progress)
+* Completely rewritten and improved GUI
+
+* Full OS X Support (For all features)
+
+* Windows 10 Support
+
+* Chromium Support
+
+* Safari (OS X) Support
+
+* Chrome Canary Support (OS X, Windows)
+
+* Custom settings
+
+* Built in logging toggle and easier bug reporting
+
+* Automatic update checks (opt-in, default off)
+
+* Removed donation links
 
 Code changes:
 
@@ -20,13 +38,25 @@ Code changes:
 
 * Code reorganization
 
-* New GUI
-
 * Moved browsers to separate package
+
+* Support for additional browsers and operating systems
+
+* py2app support
+
+* Custom settings directories for different operating systems
+
+* Proper handling of data checks before doing any sqlite changes
+
+* Browser class with some commonly shared methods
+
+* Logbook integrated logging for everything
 
 Other changes:
 
 * Slightly improved docs
+
+* Custom landing page using github pages
 
 0.1.0 (2014-10-28)
 ------------------
