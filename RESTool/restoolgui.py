@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Sun May 17 18:05:06 2015
+# Created: Sun May 17 18:51:16 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -225,6 +225,9 @@ class Ui_MainWindow(object):
         self.listBackups = QtGui.QListWidget(self.BackupRestoreMigrateTab)
         self.listBackups.setObjectName(_fromUtf8("listBackups"))
         self.MainFeaturesLayout.addWidget(self.listBackups)
+        self.btnDeleteBackup = QtGui.QPushButton(self.BackupRestoreMigrateTab)
+        self.btnDeleteBackup.setObjectName(_fromUtf8("btnDeleteBackup"))
+        self.MainFeaturesLayout.addWidget(self.btnDeleteBackup)
         self.ApplicationActionsLayout.addLayout(self.MainFeaturesLayout)
         self.ApplicationActionsLayout.setStretch(0, 60)
         self.ApplicationActionsLayout.setStretch(1, 40)
@@ -395,6 +398,7 @@ class Ui_MainWindow(object):
         self.StaticLabelVersion.setText(_translate("MainWindow", "<html><head/><body><p>Version 0.2 - Website: <a href=\"http://nikola-k.github.io/RESTool/\"><span style=\" text-decoration: underline; color:#0000ff;\">nikola-k.github.io/RESTool</span></a></p></body></html>", None))
         self.lblUpdateAvailable.setText(_translate("MainWindow", "<html><head/><body><p>Update available. Visit website for more info.</p></body></html>", None))
         self.StaticLabelBackups.setText(_translate("MainWindow", "Available Backups", None))
+        self.btnDeleteBackup.setText(_translate("MainWindow", "Delete Selected Backup", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BackupRestoreMigrateTab), _translate("MainWindow", "RESTool", None))
         self.StaticBackupFolderDescLabel.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-style:italic; color:#585858;\">Folder where the backups will be saved, default: res_backups</span></p></body></html>", None))
         self.StaticBackupFolderLabel.setText(_translate("MainWindow", "Backup Folder", None))

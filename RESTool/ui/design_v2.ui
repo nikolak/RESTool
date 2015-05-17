@@ -358,6 +358,13 @@
               <item>
                <widget class="QListWidget" name="listBackups"/>
               </item>
+              <item>
+               <widget class="QPushButton" name="btnDeleteBackup">
+                <property name="text">
+                 <string>Delete Selected Backup</string>
+                </property>
+               </widget>
+              </item>
              </layout>
             </item>
            </layout>

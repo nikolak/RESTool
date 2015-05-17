@@ -122,6 +122,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnBackupSecond.clicked.connect(self.backup_second)
         self.btnRestoreToFirst.clicked.connect(self.restore_to_first)
         self.btnRestoreToSecond.clicked.connect(self.restore_to_second)
+        self.btnDeleteBackup.clicked.connect(self._delete_backup)
 
         # Settings
 
@@ -376,12 +377,26 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 try:
                     for item in os.listdir(folder):
                         if item.endswith(".resbak"):
-                            self.backups[item]=os.path.join(folder, item)
+                            self.backups[item] = os.path.join(folder, item)
                 except Exception as e:
                     log.exception(e)
 
         for backup in self.backups.keys():
             self.listBackups.addItem(backup)
+
+    def _delete_backup(self):
+        try:
+            selected_backup = str(self.listBackups.selectedItems()[0].text())
+        except IndexError:
+            log.error("No backup selected for deletion")
+
+        try:
+            os.remove(self.backups.get(selected_backup))
+        except Exception as e:
+            log.exception(e)
+            log.debug("Failed to remove backup at {}".format(selected_backup))
+
+        self._update_backups_list()
 
     def __migrate(self, from_browser, to_browser):
         from_name = from_browser.name
