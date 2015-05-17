@@ -77,7 +77,7 @@ class Chrome(Browser):
             log.debug("Full path set to {}".format(full_path))
 
             if os.path.exists(full_path):
-                log.debug("Full chrome path exists")
+                log.debug("Full path exists")
                 return full_path
             else:
                 log.warn("Full path does not exist. RES Not installed?")
@@ -167,7 +167,7 @@ class Chrome(Browser):
             log.info("Setting data complete!")
             return True
         except Exception as e:
-            log.error("Exception when converting json data to chrome")
+            log.error("Exception when converting json data")
             log.exception(e)
 
     def backup(self):
@@ -182,7 +182,7 @@ class Chrome(Browser):
             return False
 
     def restore_from_self(self, backup_path):
-        log.info("Chrome restore from self")
+        log.info("Restore from self")
 
         if not self.res_exists or not backup_path:
             return False
