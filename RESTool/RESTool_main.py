@@ -365,7 +365,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         log.debug("Restore format")
 
         if backup_browser == restore_format:
-            if not browser.restore_from_self(backup_path):
+
+            if browser.restore_from_self(backup_path):
+                self._info("Restoring from backup done!")
+            else:
                 self._warn("Restoring from same browser backup format failed.")
         elif backup_browser in self.all_browsers.keys():
             try:
@@ -378,7 +381,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 self._warn("Restoring failed due to internal exception.")
                 return
 
-            if not browser.set_data(restore_data):
+            if browser.set_data(restore_data):
+                self._info("Restoring from backup done!")
+            else:
                 self._warn("Restoring from a different browser failed.")
         else:
             self._warn("Unknown backup format.")
