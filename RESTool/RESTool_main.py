@@ -23,8 +23,11 @@ import os
 import sys
 from PyQt4 import QtGui
 import copy
+import json
+import webbrowser
 from collections import OrderedDict
 
+from appdirs import AppDirs
 from logbook import FileHandler, Logger
 
 if os.path.exists("application.log"):
@@ -51,6 +54,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         super(RESToolUI, self).__init__(parent)
         log.info("setting up")
         self.setupUi(self)
+        self.dirs = AppDirs("RESTool", "nikolak")
+        self.config = None
         self.labelMessage.setVisible(False)
 
         self.choices_first = OrderedDict({"None": None})
@@ -77,8 +82,25 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnRestoreToFirst.clicked.connect(self.restore_to_first)
         self.btnRestoreToSecond.clicked.connect(self.restore_to_second)
 
+        # Settings
+
+        self.btnBrowseBackupsFolder.clicked.connect(self.browse_backup_folder)
+        self.btnEnableLogging.clicked.connect(self.enable_logging)
+        self.btnDisableLogging.clicked.connect(self.disable_logging)
+        self.btnSubmitBug.clicked.connect(self.submit_bug)
+        self.btnRestoreSettings.clicked.connect(self.restore_settings)
+        self.btnSaveSettings.clicked.connect(self.save_settings)
+        self.btnRemoveLocalConfig.clicked.connect(self.remove_local_config)
+        self.btnRemoveSystemConfig.clicked.connect(self.remove_sys_dir_config)
+
         self._set_available_browsers()
         self._set_available_profiles(True, True)
+
+        self.load_settings()
+        if self.config['auto_update_check']:
+            # TODO: Implement update check
+            pass
+
         self._update_backups_list()
 
     # noinspection PyCallByClass,PyTypeChecker
@@ -99,7 +121,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                                             QtGui.QMessageBox.Yes)
 
         if result == QtGui.QMessageBox.Cancel:
-            return False
+            return None
         elif result == QtGui.QMessageBox.No:
             return False
         elif result == QtGui.QMessageBox.Yes:
@@ -294,11 +316,23 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.btnRestoreToSecond.setEnabled(True)
 
     def _update_backups_list(self):
+        log.debug("_update backups lis")
         self.listBackups.clear()
-        if not os.path.exists("res_backups"):
-            return
-        backup_files = os.listdir("res_backups")
-        for backup in backup_files:
+        local_folder = self.config['bak_folder']
+        system_folder = self.dirs.user_data_dir
+        default_folder = "res_backups"
+        folders_to_check = {local_folder, system_folder, default_folder}
+        all_files = []
+        log.debug("folders to check {}".format(folders_to_check))
+        for folder in folders_to_check:
+            if folder:
+                try:
+                    all_files.extend(os.listdir(folder))
+                except Exception as e:
+                    log.exception(e)
+
+        valid_files = [f for f in all_files if f.endswith(".resbak")]
+        for backup in valid_files:
             self.listBackups.addItem(backup)
 
     def __migrate(self, from_browser, to_browser):
@@ -335,11 +369,17 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
     def __backup(self, browser):
         log.info("Backing up {}".format(browser.name))
+        use_bak_dir = self.config.get("sys_dir_bak")
+        time_f = self.config.get("bak_format")
+        if use_bak_dir:
+            bak_dir = self.dirs.user_data_dir
+        else:
+            bak_dir = self.config.get("bak_folder")
 
         if not browser:
             return
 
-        if browser.backup():
+        if browser.backup(bak_dir, time_f):
             self._update_backups_list()
         else:
             self._warn("Backing up failed.")
@@ -393,6 +433,173 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
     def restore_to_second(self):
         self.__restore(self.second_browser)
+
+    # Settings Tab
+
+    def browse_backup_folder(self):
+        log.debug("browsing for backup folder")
+        directory = QtGui.QFileDialog.getExistingDirectory(self,
+                                                           "Backup Folder")
+
+        if directory:
+            log.debug("backup folder set as {}".format(directory))
+            self.lneBackupFolder.setText(directory)
+
+    def enable_logging(self):
+        log.debug("enable_logging")
+        if not os.path.exists("application.log"):
+            try:
+                with open("application.log", "w") as tmp:
+                    tmp.write("Log Start")
+                log.info("log file created")
+                self.DebuggingStatusLabel.setText("Current logging status: Enabled")
+                self._info("Log file created, all actions will now be saved to application.log file.\n"
+                           "Please restart the application in order for all operations to be logged.\n"
+                           "After you're done with sending the log press 'Disable Logging'\n")
+
+            except Exception as e:
+                log.exception(e)
+                self._warn("Could not create the log file.\n"
+                           "Try to create it manually.")
+
+    def disable_logging(self):
+        log.debug("disable_logging")
+        if os.path.exists("application.log"):
+            try:
+                os.remove("application.log")
+                log.info("log file removed")
+                self.DebuggingStatusLabel.setText("Current logging status: Disabled")
+                self._info("Application log file has been removed from your system.")
+            except Exception as e:
+                log.exception(e)
+                self._warn("Could not remove the application log from your system!\n"
+                           "Try to manually remove 'application.log' file.")
+
+    def submit_bug(self):
+
+        github_prompt = self._prompt(msg="Do you have a GitHub account? \n"
+                                         "If not then your default email client will be used for reporting the issue")
+        message_body = "Issue description:%0D%0A" \
+                       "How to reproduce:%0D%0A" \
+                       "Operating systems and/or browsers affected:%0D%0A" \
+                       "RESTool version:%0D%0A" \
+                       "Operating System version:%0D%0A" \
+                       "----------------------------%0D%0A" \
+                       "Attach a log file if possible."
+
+        if github_prompt is None:  # Cancel
+            return
+        elif github_prompt is False:  # No
+            webbrowser.open("mailto:nikolak@outlook.com?subject=RESTool Bug Report&body={}".format(message_body))
+        else:  # Yes
+            webbrowser.open("https://github.com/Nikola-K/RESTool/issues/new?body={}".format(message_body))
+
+    def restore_settings(self):
+        log.info("restore_settings")
+        self.lneBackupFolder.setText("res_backups")
+        self.chkAutomaticBakFolder.setChecked(False)
+        self.lneBackupTimeFormat.setText("%Y-%m-%d")
+        self.chkPortableSettings.setChecked(True)
+        self.chkAutomaticUpdates.setChecked(False)
+        self._info("Settings restored to their default values but not saved.\n"
+                   "Use the 'Save Current Settings' button to write the changes.\n"
+                   "Logging is not affected.")
+
+    def save_settings(self):
+        log.debug("save_settings")
+        config_dir = None
+        if self.chkPortableSettings.isChecked():
+            config_file = "settings.json"
+        else:
+            config_dir = self.dirs.user_data_dir
+            config_file = os.path.join(config_dir, "settings.json")
+
+        log.info("saving file to {}".format(config_file))
+
+        config = {"bak_folder": str(self.lneBackupFolder.text()),
+                  "sys_dir_bak": self.chkAutomaticBakFolder.isChecked(),
+                  "bak_format": str(self.lneBackupTimeFormat.text()),
+                  "portable_config": self.chkPortableSettings.isChecked(),
+                  "auto_update_check": self.chkAutomaticUpdates.isChecked()
+                  }
+
+        try:
+            if config_dir and not os.path.exists(config_dir):
+                log.debug("Creating config dir")
+                os.makedirs(config_dir)
+
+            with open(config_file, "w") as out_file:
+                json.dump(config, out_file, indent=True)
+            self.config = config
+            log.info("Settings saved")
+            self._info("Settings saved to {}".format(config_file))
+
+        except Exception as e:
+            log.exception(e)
+            self._warn("Saving settings failed.")
+
+    def remove_local_config(self):
+        log.info("removing local config")
+        if os.path.exists("settings.json"):
+            try:
+                os.remove("settings.json")
+                log.debug("config file removed from settings.json")
+                self._info("Config file removed.")
+            except Exception as e:
+                log.exception(e)
+                self._warn("Removing local config file failed.")
+        else:
+            log.debug("no file to remove")
+
+    def remove_sys_dir_config(self):
+        log.info("removing local config")
+        config_file = os.path.join(self.dirs.user_data_dir, "settings.json")
+        if os.path.exists(config_file):
+            try:
+                os.remove(config_file)
+                log.debug("config file removed from {}".format(config_file))
+                self._info("Config file removed.")
+            except Exception as e:
+                log.exception(e)
+                self._warn("Removing config file from system folder failed.")
+        else:
+            log.debug("no file to remove")
+
+    def load_settings(self):
+        log.info("Loading settings")
+        config_dir = self.dirs.user_data_dir
+        sys_config_file = os.path.join(config_dir, "settings.json")
+        loc_config_file = "settings.json"
+        if os.path.exists(sys_config_file):  # system file is preferred
+            log.debug("system config file found")
+            config_file = sys_config_file
+        elif os.path.exists(loc_config_file):
+            log.debug("local config file found")
+            config_file = loc_config_file
+        else:
+            log.info("no config file found")
+            config_file = None
+
+        if config_file:
+            with open(config_file) as input_file:
+                try:
+                    self.config = json.load(input_file)
+                except Exception as e:
+                    log.exception(e)
+            self.lneBackupFolder.setText(self.config['bak_folder'])
+            self.chkAutomaticBakFolder.setChecked(self.config['sys_dir_bak'])
+            self.lneBackupTimeFormat.setText(self.config['bak_format'])
+            self.chkPortableSettings.setChecked(self.config['portable_config'])
+            self.chkAutomaticUpdates.setChecked(self.config['auto_update_check'])
+        else:
+            log.info("setting default config")
+            self.config = {
+                "sys_dir_bak": False,
+                "bak_format": "%Y-%m-%d",
+                "bak_folder": "res_backups",
+                "portable_config": True,
+                "auto_update_check": False
+            }
 
 
 def main():

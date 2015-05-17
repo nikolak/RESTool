@@ -21,7 +21,6 @@ import json
 import os
 import platform
 import shutil
-from time import strftime
 
 from logbook import FileHandler, Logger
 
@@ -225,16 +224,6 @@ class Firefox(Browser):
             return True
         except Exception as e:
             log.exception(e)
-
-    def backup(self):
-        if self.path:
-            fname = "firefox.{}.backup".format(strftime("%Y-%m-%d"))
-            try:
-                return self._backup_file(self.path, fname)
-            except Exception as e:
-                log.exception(e)
-        else:
-            return False
 
     def restore_from_self(self, backup_path):
         log.info("Firefox restore from self")

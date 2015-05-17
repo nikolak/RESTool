@@ -20,7 +20,6 @@ import os
 import platform
 import shutil
 import sqlite3
-from time import strftime
 
 from logbook import FileHandler, Logger
 
@@ -166,17 +165,6 @@ class Safari(Browser):
         except Exception as e:
             log.error("Exception when converting json data to chrome")
             log.exception(e)
-
-    def backup(self):
-        if self.path:
-            fname = "safari.{}.backup".format(strftime("%Y-%m-%d"))
-            try:
-                return self._backup_file(self.path, fname)
-            except Exception as e:
-                log.exception(e)
-
-        else:
-            return False
 
     def restore_from_self(self, backup_path):
         log.info("Safari restore from self")

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>583</width>
-    <height>482</height>
+    <width>591</width>
+    <height>472</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,14 +34,17 @@
         <item>
          <layout class="QVBoxLayout" name="MainContentLayout" stretch="30,0,0,70">
           <item>
-           <layout class="QHBoxLayout" name="BrowseerPickerLayout" stretch="45,5,45">
+           <layout class="QHBoxLayout" name="BrowseerPickerLayout" stretch="0,0,0">
+            <property name="spacing">
+             <number>5</number>
+            </property>
             <item>
              <layout class="QHBoxLayout" name="FirstBrowserLayout">
               <property name="spacing">
                <number>0</number>
               </property>
               <item>
-               <layout class="QVBoxLayout" name="FirstBrowserVerticalLayout" stretch="0,0,0,0">
+               <layout class="QVBoxLayout" name="FirstBrowserVerticalLayout" stretch="10,20,20,20">
                 <property name="spacing">
                  <number>0</number>
                 </property>
@@ -119,8 +122,11 @@
             </item>
             <item>
              <layout class="QHBoxLayout" name="SecondBrowserLayout">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
+               <layout class="QVBoxLayout" name="verticalLayout" stretch="10,20,20,20">
                 <property name="spacing">
                  <number>0</number>
                 </property>
@@ -169,6 +175,9 @@
                 </item>
                 <item>
                  <layout class="QHBoxLayout" name="SecondBrowserDBFoundLayout" stretch="40,60">
+                  <property name="spacing">
+                   <number>6</number>
+                  </property>
                   <item>
                    <widget class="QLabel" name="StaticRESInfo_2">
                     <property name="text">
@@ -334,18 +343,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QListWidget" name="listBackups">
-                <item>
-                 <property name="text">
-                  <string>Chrome 2015-01-01-2200.backup</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Firefox 2015-12-31-1958.backup</string>
-                 </property>
-                </item>
-               </widget>
+               <widget class="QListWidget" name="listBackups"/>
               </item>
              </layout>
             </item>
@@ -359,6 +357,265 @@
        <attribute name="title">
         <string>Settings</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QVBoxLayout" name="BackupFolderLayout">
+          <item>
+           <layout class="QVBoxLayout" name="BackupFolderLayout_2">
+            <item>
+             <widget class="QLabel" name="StaticBackupFolderDescLabel">
+              <property name="text">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#585858;&quot;&gt;Folder where the backups will be saved, default: res_backups&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="BackupFolderLayout_3">
+              <item>
+               <widget class="QLabel" name="StaticBackupFolderLabel">
+                <property name="text">
+                 <string>Backup Folder</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lneBackupFolder">
+                <property name="text">
+                 <string>res_backups</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btnBrowseBackupsFolder">
+                <property name="text">
+                 <string>Browse</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="chkAutomaticBakFolder">
+              <property name="text">
+               <string>Use automatic system specific app directory</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="SettingsDividerLine">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="BackupDateFormatLayout">
+          <item>
+           <widget class="QLabel" name="StaticBackupDateFormatDescLabel">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic; color:#535353;&quot;&gt;Custom backup date/time format, default: %Y-%m-%d - &lt;/span&gt;&lt;a href=&quot;https://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior&quot;&gt;&lt;span style=&quot; font-style:italic; text-decoration: underline; color:#0055ff;&quot;&gt;available variables&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="BackupDateFormatLayout_2">
+            <item>
+             <widget class="QLabel" name="StaticBackupDateFormatLabel">
+              <property name="text">
+               <string>Backup time format:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lneBackupTimeFormat">
+              <property name="text">
+               <string>%Y-%m-%d</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="SettingsDividerLine_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="PortableSettingsFormatLayout">
+          <item>
+           <widget class="QLabel" name="StaticPortableSettingsDescLabel">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Portable RES settings storage (settings.json with your custom config will be stored next to app if checked, otherwise it will be placed in auto-detected system specific configuration directory)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QCheckBox" name="chkPortableSettings">
+              <property name="text">
+               <string>Portable settings</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRemoveSystemConfig">
+              <property name="text">
+               <string>Remove System Settings File</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnRemoveLocalConfig">
+              <property name="text">
+               <string>Remove Local Settings File</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="SettingsDividerLine_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="DebuggingSettingsLayout">
+          <item>
+           <widget class="QLabel" name="StaticDebuggingSettingsLabel">
+            <property name="text">
+             <string>Debugging/Log reporting functions:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="DebuggingStatusLabel">
+            <property name="text">
+             <string>Current logging status: Disabled</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="DebuggingSettingsLayout_2">
+            <item>
+             <widget class="QPushButton" name="btnEnableLogging">
+              <property name="text">
+               <string>Enable Logging</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDisableLogging">
+              <property name="text">
+               <string>Disable Logging</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnSubmitBug">
+              <property name="text">
+               <string>Submit a bug report</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="SettingsDividerLine_4">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="AutomaticUpdateLayer">
+          <item>
+           <widget class="QLabel" name="StaticAutomaticUpdatesDescLabel">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Automatic checking for new version. No personal information is sent to the server.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkAutomaticUpdates">
+            <property name="text">
+             <string>Check for updates on startup.</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="verticalSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="SettingsButtonsLayout">
+          <item>
+           <widget class="QPushButton" name="btnRestoreSettings">
+            <property name="text">
+             <string>Restore settings to default</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSaveSettings">
+            <property name="text">
+             <string>Save current settings</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -366,5 +623,38 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>chkAutomaticBakFolder</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lneBackupFolder</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>201</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>225</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>chkAutomaticBakFolder</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>btnBrowseBackupsFolder</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>402</x>
+     <y>107</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
