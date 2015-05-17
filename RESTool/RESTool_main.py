@@ -108,6 +108,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                              "chrome": Chrome,
                              "safari": Safari,
                              "canary": Canary}
+        self.backups = {}
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
@@ -364,21 +365,22 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     def _update_backups_list(self):
         log.debug("_update backups lis")
         self.listBackups.clear()
+        self.backups = {}
         local_folder = self.config['bak_folder']
         system_folder = self.dirs.user_data_dir
         default_folder = "res_backups"
         folders_to_check = {local_folder, system_folder, default_folder}
-        all_files = []
         log.debug("folders to check {}".format(folders_to_check))
         for folder in folders_to_check:
             if folder:
                 try:
-                    all_files.extend(os.listdir(folder))
+                    for item in os.listdir(folder):
+                        if item.endswith(".resbak"):
+                            self.backups[item]=os.path.join(folder, item)
                 except Exception as e:
                     log.exception(e)
 
-        valid_files = [f for f in all_files if f.endswith(".resbak")]
-        for backup in valid_files:
+        for backup in self.backups.keys():
             self.listBackups.addItem(backup)
 
     def __migrate(self, from_browser, to_browser):
@@ -446,8 +448,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         restore_format = browser.name
         backup_browser = selected_backup.split('.')[0]
-        backup_path = os.path.join("res_backups", selected_backup)
-        log.debug("Selected backup:{}".format(selected_backup))
+        backup_path = self.backups.get(selected_backup)
+        log.debug("Selected backup: {}".format(selected_backup))
+        log.debug("Backup path: {}".format(backup_path))
         log.debug("Restore format")
 
         if backup_browser == restore_format:
