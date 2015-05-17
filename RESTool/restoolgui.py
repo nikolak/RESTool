@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Sun May 17 17:19:46 2015
+# Created: Sun May 17 18:05:06 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -372,7 +372,7 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "RESTool - Development Version", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "RESTool", None))
         self.StaticFirstBrowserLabel.setText(_translate("MainWindow", "First Browser", None))
         self.StaticBrowserName.setText(_translate("MainWindow", "Browser Name:", None))
         self.StaticProfileName.setText(_translate("MainWindow", "Profile Name:", None))
@@ -392,7 +392,7 @@ class Ui_MainWindow(object):
         self.btnBackupSecond.setText(_translate("MainWindow", "Backup second browser", None))
         self.btnRestoreToFirst.setText(_translate("MainWindow", "Restore selected backup to the first browser", None))
         self.btnRestoreToSecond.setText(_translate("MainWindow", "Restore selected backup to the second browser", None))
-        self.StaticLabelVersion.setText(_translate("MainWindow", "<html><head/><body><p>Version 0.2dev - GitHub: <a href=\"https://github.com/Nikola-K/RESTool\"><span style=\" text-decoration: underline; color:#0000ff;\">Nikola-K/RESTool</span></a></p></body></html>", None))
+        self.StaticLabelVersion.setText(_translate("MainWindow", "<html><head/><body><p>Version 0.2 - Website: <a href=\"http://nikola-k.github.io/RESTool/\"><span style=\" text-decoration: underline; color:#0000ff;\">nikola-k.github.io/RESTool</span></a></p></body></html>", None))
         self.lblUpdateAvailable.setText(_translate("MainWindow", "<html><head/><body><p>Update available. Visit website for more info.</p></body></html>", None))
         self.StaticLabelBackups.setText(_translate("MainWindow", "Available Backups", None))
         self.MainTabWidget.setTabText(self.MainTabWidget.indexOf(self.BackupRestoreMigrateTab), _translate("MainWindow", "RESTool", None))
