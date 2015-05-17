@@ -16,6 +16,7 @@
 import os
 import platform
 import shutil
+from uuid import uuid4
 from time import strftime
 
 from logbook import FileHandler, Logger
@@ -76,7 +77,9 @@ class Browser(object):
         bak_dir = dir_path if dir_path else "res_backups"
         t_format = time_format if time_format else "%Y-%m-%d"
 
-        file_name = "{}.{}.resbak".format(self.name, strftime(t_format))
+        file_name = "{}.{}.{}.resbak".format(self.name,
+                                             strftime(t_format),
+                                             str(uuid4())[:5])
         full_path = os.path.join(bak_dir, file_name)
         log.debug("full path backup:{}".format(full_path))
         try:
