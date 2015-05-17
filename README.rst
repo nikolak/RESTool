@@ -7,11 +7,11 @@ RESTool
 Unofficial cross platform tool for migrating between browsers, backing up, and restoring from backups,
 "Reddit Enhancement Suite" aka RES settings.
 
-**This application is in no way affiliated with RES** and all issues should be reported to author and not RES authors
+**This application is in no way affiliated with RES** and all issues should be reported to RESTool author and not RES authors
 or subreddits that are used for RES troubleshooting/issue reporting.
 
-See Features_ for a list of software features, Screenshots_ to see how it looks like or
-simply jump to Downloads_ to see how you can get it.
+See Features_ for a list of software features, Screenshots_ to see how it looks like, or
+simply jump to Downloads_ to use it.
 
 For explanation of the options available see Usage_ section and for any issues Help_ section
 and for other common questions see FAQs_.
@@ -19,7 +19,7 @@ and for other common questions see FAQs_.
 If you have any questions you can contact me directly via email that's visible on
 my `GitHub Profile <https://github.com/Nikola-K>`_
 
-Seeing how this is version 0.1 manual backup, just in case something goes wrong, of RES settings file is recommended.
+Seeing how this is version 0.2 manual backup, just in case something goes wrong, of RES settings file is recommended.
 See `This page <https://www.reddit.com/r/Enhancement/wiki/backing_up_res_settings>`_ for information on
 how to make manual backup
 
@@ -28,30 +28,37 @@ how to make manual backup
 Features
 ========
 
-* Backup RES settings from Chrome and Firefox
+* Works for all major browsers: Chrome, Chrome Canary, Chromium, Firefox, Safari
 
-* Restore RES settings
+* Backup RES settings for all browsers listed.
 
-* Migrate data between browsers
+* Restore RES settings from backups.
 
-* Restore settings into a different browser
+* Migrate data between browsers (e.g. Firefox to Chrome).
 
-* Cross platform (Linux and Windows only at the moment)
+* Restore backed up settings into a different browser.
+
+* Cross platform Linux (All), Windows (Vista and up), OS X (Mavericks and up)
 
 * Simple to use GUI (see screenshot below)
 
 Screenshots
 ===========
 
-Linux xubuntu 14.04:
+Linux xubuntu 15.04:
 --------------------
 
 .. image :: docs/0.1.0dev_linux.png
 
-Windows 7:
-----------
+Windows 10:
+-----------
 
-.. image :: docs/0.1.0windows.PNG
+.. image :: docs/0.2.0windows.PNG
+
+OS X Mavericks:
+---------------
+
+.. image :: docs/0.2.0osx.PNG
 
 
 Downloads
@@ -68,6 +75,11 @@ You can find the latest stable build here: https://github.com/Nikola-K/RESTool/r
 
 Windows Vista and up are supported. Tested on Windows 7 32bit.
 
+OS X
+----
+Apple OS X distribution is packed as a .app package and can be downloaded here: https://github.com/Nikola-K/RESTool/releases
+
+
 Linux
 -----
 
@@ -75,71 +87,71 @@ There is no binary provided for linux but the only requirements are Python 2.7 a
 are available in most distro repos. You can run the application, after installing pyqt, by simply downloading
 the source from releases and running `RESTool_main.py` from your command line.
 
-Tested on xubuntu 32bit.
+Tested on xubuntu 64bit.
 
 Usage
 =====
 
-This section gives short description of every feature available:
+This section gives short description of main features:
 
-Firefox profile
----------------
+Profile
+-------
 
-Firefox supports multiple profiles; you can pick (if you have more than one) which profile to use for
-the other features.
+Some browsers like Firefox support multiple profiles; you can pick (if you have more than one) which profile to use for
+the other features from the dropdown box.
 
-Chrome to Firefox
------------------
+First Browser To The Second
+---------------------------
 
-Replaces your Firefox RES settings with settings from Chrome RES. RES has to be installed in both browsers for this feature to work.
-
-**Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
-
-Firefox to Chrome
------------------
-
-Replaces your Chrome RES settings with settings from Firefox RES.  RES has to be installed in both browsers for this feature to work.
+This will take all RES settings from browser and profile selected as "First Browser" in the upper part of the window,
+and move them to the "Second Browser" that you selected.
 
 **Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
 
-Backup Chrome
--------------
+Second Browser To The First
+---------------------------
 
-Copy the RES settings file from its location in Chrome data folder to subfolder named `res_backups` in the same
-directory as the application. If the folder does not exist it will be created. Make sure that your account has the
-necessary permissions to write changes to the location of the application.
+Opposite of the above.
 
-Backup Firefox
---------------
+Takes RES settings from the browser and profile picked under "Second Browser" section of the app and copies them
+to the "First Browser" that you picked.
 
-Copy the RES settings file from its location in Firefox data folder to subfolder named `res_backups` in the same
-directory as the application. If the folder does not exist it will be created. Make sure that your account has the
-necessary permissions to write changes to the location of the application.
+**Note:** Migrating settings may fail, or make no changes to RES settings, if one or both browsers are running.
 
-Restore selected backup to Chrome
----------------------------------
+Backup First Browser
+--------------------
 
-Restores the currently selected backup file in the list on the right to Chrome RES settings.
+Takes RES Settings from the browser you selected as first in the app and copies the settings to the backup folder.
+Default is "res_backups" folder, but you can pick one yourself or use system specific directories for saving data.
 
-The backup file can be either backup created either using "Backup Chrome" or "Backup Firefox" feature.
+If the backup folder does not exist it will be created. Make sure you have the necessary permissions to do so.
 
-Restore selected backup to Firefox
-----------------------------------
+Backup Second Browser
+---------------------
 
-Restores the currently selected backup file in the list on the right to Chrome RES settings.
+Takes RES Settings from the browser you selected as first in the app and copies the settings to the backup folder.
+Default is "res_backups" folder, but you can pick one yourself or use system specific directories for saving data.
 
-The backup file can be either backup created either using "Backup Chrome" or "Backup Firefox" feature.
+If the backup folder does not exist it will be created. Make sure you have the necessary permissions to do so.
 
-Pay for RESTool
----------------
 
-Opens a PayPal link to pay the amount picked in the dropbox on the right. See FAQs_ for more info about
-paid vs free option.
+Restore selected backup to the First Browser
+--------------------------------------------
 
-Donate to RES
--------------
+Pretty self explanatory, takes RES settings from the backup you selected on the right and copies it to the first browser.
 
-Opens website with info on how you can donate to RES and its author.
+Source browser of the backup is irrelevant.
+
+**Note:** Browser MUST be closed for changes to take effect.
+
+Restore selected backup to the Second Browser
+---------------------------------------------
+
+Pretty self explanatory, takes RES settings from the backup you selected on the right and copies it to the second browser.
+
+Source browser of the backup is irrelevant.
+
+**Note:** Browser MUST be closed for changes to take effect.
 
 Delete selected backup file
 ---------------------------
@@ -155,38 +167,96 @@ Can not start the application
 
 Make sure you have `Microsoft Visual C++ 2008 Redistributable <http://www.microsoft.com/en-us/download/details.aspx?id=29>`_ installed
 
-How to report the issues
-------------------------
+How to report issues
+--------------------
 
-Create a file named `log.txt` in the same location as the application and the necessary debug information should be
-saved in it. Try running the application and reproducing the issue. You can report the issue by opening a new issue
-on github, sending an email or contacting the author some other way.
+Click on Settings tab then click on "Enable Logging" button, a file named "application.log" will be created.
 
-You can upload the log file to pastebin.com, for example, if it's long.
+Close the app and restart it, recreate the issue you're having. Open Settings tab again and click on "Submit Bug Report" and follow instructions.
 
-If you're running OS X or Windows XP (or older) or browsers other than Firefox and Chrome
+Attach the created application.log file if possible.
+
+Once you're done to disable logging click on "Disable Logging" in the Settings menu, restart may be necessary to fully eliminate it.
+
+If you're running Windows XP or browsers other than Firefox, Chrome, Chromium, Chrome Canary, Safari (OS X)
 those operating systems and browsers are not supported so I can not guarantee that the issue you're having
 will be fixed.
 
-**Important:** As of version 0.2.0 the log file *may* contain some personal data, or even passwords (if they are saved using RES) you should remove any personal data you're not comfortable with sharing from the log file before submitting it.
+**Important:** As of version 0.2.0 the log file *may* (in very rare circumstances) contain some personal data, or even passwords (if they are saved using RES) you should remove any personal data you're not comfortable with sharing from the log file before submitting it.
 
+Settings
+========
+
+This section will briefly go over the existing options in the Settings tab.
+
+Backup Folder
+-------------
+Backup folder means which folder will be used by default for saving RES backups
+
+If you check "use automatic system specific directory" checkbox the backups will be saved in following locations:
+
+OS X:
+
+    `/Users/<username>/Library/Application Support/RESTool`
+
+Linux:
+
+    `/home/<username>/.local/share/RESTool`
+
+Windows:
+
+    `C:\Users\<username>\AppData\Local\nikolak\RESTool`
+
+Backup Time Format
+------------------
+
+Backup filename looks like this: `<browser name>.<time format>.<5 char unique id>.resbak`
+
+You can change `<time format>` to whatever you want to which by default is `%Y-%m-%d` which produces e.g. `2015-05-17`
+
+for a list of supported variables see: https://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+
+Portable RES Settings
+---------------------
+
+If you enable this the file `settings.json` will be created in case your config is different than default one.
+
+If you disable portable settings the file `settings.json` will be saved in the same system locations that the automatic backup folder uses.
+
+The two buttons allow you to easily remove those files without having to search for them automatically.
+
+In case both local and system config files exist the system one is used.
+
+Debugging
+---------
+
+The buttons are self explanatory and enable you to easily enable and disable application logging, which can be manually enabled by having `application.log` file in the same location as the app.
+
+Automatic Update
+----------------
+
+The automatic update checkbox will simply allow app to check for  updates on startup.
+
+No downloads or anything else is started if update is found, only a small text is displayed on the main page.
+
+The update check does not send absolutely any private data - not even the current version or OS info.
+
+**By default this feature is disabled.**
 
 FAQs
 ====
 
-Q: Why is the windows .exe size so big?
----------------------------------------
+Q: Why is the windows .exe or OS X .app size so big?
+----------------------------------------------------
 
-A: This application is written using Python and PyQt and "compiled" into an exe file using py2exe.
+A: This application is written using Python and PyQt and "compiled" into an exe file using py2exe. (py2app for OS X)
 Due to the nature of Python programming language, which does not offer native option to generate a single .exe,
 the whole python and all the application dependencies are packed into one .exe file and extracted upon runtime.
 
-Q: Why isn't OSX and/or [your favorite browser] supported?
-----------------------------------------------------------
+Q: Why isn't [your favorite browser] supported?
+-----------------------------------------------
 
-A: I simply do not use them and no OS data is available for RES usage so I just picked two OS that I use and two
-most popular browsers (Firefox and Chrome). If there is enough interest and support for the application regarding
-adding more browsers and/or OS it will be added.
+A: Either there has been no requests for it or it's not officially supported by RES team.
 (Browsers that are not officially supported by RES will not be added)
 
 Q: Option ____ failed. What now?
