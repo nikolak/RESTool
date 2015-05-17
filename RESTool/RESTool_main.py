@@ -37,7 +37,7 @@ else:  # py2exe otherwise shows annoying popup if there's something in stderr
 
 log = Logger("Main Qt")
 
-from browsers import Chrome, Firefox, Safari, Chromium
+from browsers import Chrome, Firefox, Safari, Chromium, Canary
 
 try:
     from RESTool import restoolgui
@@ -61,7 +61,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         self.all_browsers = {"firefox": Firefox,
                              "chrome": Chrome,
-                             "safari": Safari}
+                             "safari": Safari,
+                             "canary": Canary}
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
         self.cboFirstBrowserProfile.currentIndexChanged.connect(self._first_browser_profile_changed)
@@ -122,6 +123,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         firefox = Firefox()
         safari = Safari()
         chromium = Chromium()
+        canary = Canary()
 
         if chrome.res_exists:
             self.choices_first['Chrome'] = chrome
@@ -139,6 +141,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.choices_first['Chromium'] = chromium
             self.choices_second['Chromium'] = copy.copy(chromium)
 
+        if canary.res_exists:
+            self.choices_first['Canary'] = canary
+            self.choices_second['Canary'] = copy.copy(canary)
+
         for browser_name in self.choices_first:
             self.cboFirstBrowser.addItem(browser_name)
             self.cboSecondBrowser.addItem(browser_name)
@@ -146,7 +152,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         log.info("Available choices first {}".format(self.choices_first))
 
         if not self.choices_first:
-            self._warn("RES could not be found in neither Firefox nor Chrome!")
+            self._warn("RES could not be found in neither of the browsers!")
 
     def _set_available_profiles(self, for_first, for_second):
         log.debug("_set_available_profiles")

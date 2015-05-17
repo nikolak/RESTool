@@ -19,3 +19,4 @@ from chrome import Chrome
 from firefox import Firefox
 from safari import Safari
 from chromium import Chromium
+from canary import Canary
