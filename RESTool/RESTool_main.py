@@ -26,7 +26,9 @@ import copy
 import json
 import webbrowser
 from collections import OrderedDict
+import urllib
 
+from PyQt4.QtCore import QThread, SIGNAL
 from appdirs import AppDirs
 from logbook import FileHandler, Logger
 
@@ -48,6 +50,43 @@ except ImportError:
     import restoolgui
 
 
+class checkUpdatesThread(QThread):
+    def __init__(self, version):
+        QThread.__init__(self)
+        self.version = version
+        self.update_exists = False
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        log.debug("Checking for updates...")
+        self.running = True
+        try:
+            u = urllib.urlopen("https://api.github.com/repos/Nikola-K/RESTool/releases")
+            j = json.load(u)
+            tag = j[0]['tag_name']
+            draft = j[0].get('draft', False)
+            prerelease = j[0].get('prerelease', False)
+            release_ver = tag.replace('v', '')
+            log.debug("Latest release version {}".format(release_ver))
+            if not prerelease and not draft:
+                if self.version < release_ver:
+                    self.update_exists = True
+        except Exception as e:
+            log.exception(e)
+
+        if self.update_exists:
+            log.info("Update exists, emitting yes.")
+            self.emit(SIGNAL('update(QString)'), "yes")
+        else:
+            log.info("Update doesn't exist, emitting no.")
+            self.emit(SIGNAL('update(QString)'), "no")
+
+    def stop(self):
+        self.running = False
+
+
 class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
     # noinspection PyUnresolvedReferences
     def __init__(self, parent=None):
@@ -57,6 +96,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.dirs = AppDirs("RESTool", "nikolak")
         self.config = None
         self.labelMessage.setVisible(False)
+        self.lblUpdateAvailable.setVisible(False)
 
         self.choices_first = OrderedDict({"None": None})
         self.choices_second = OrderedDict({"None": None})
@@ -97,11 +137,17 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self._set_available_profiles(True, True)
 
         self.load_settings()
-        if self.config['auto_update_check']:
-            # TODO: Implement update check
-            pass
 
         self._update_backups_list()
+
+        if self.config['auto_update_check']:
+            self.updateThread = checkUpdatesThread(__version__)
+            self.connect(self.updateThread, SIGNAL("update(QString)"), self.update_status)
+            self.updateThread.start()
+
+    def update_status(self, status):
+        if status == "yes":
+            self.lblUpdateAvailable.setVisible(True)
 
     # noinspection PyCallByClass,PyTypeChecker
     def _warn(self, msg, title="Warnning"):
@@ -607,10 +653,6 @@ def main():
     form = RESToolUI()
     form.show()
     app.exec_()
-
-
-def cli():
-    pass
 
 
 if __name__ == '__main__':
