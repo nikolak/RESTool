@@ -142,7 +142,7 @@ class Safari(Browser):
             log.debug("Tuples generated. Count: {}".format(len(res_data)))
             log.debug("Checking tuple types")
             for t in res_data:
-                if not all(isinstance(i, str) for i in t):
+                if not all(isinstance(i, (str, unicode, bool, int, float)) for i in t):
                     log.critical("Not all items in res_data are strings. Aborting")
                     log.debug(t)
                     return
