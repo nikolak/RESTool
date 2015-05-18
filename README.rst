@@ -58,7 +58,7 @@ Windows 10:
 OS X Mavericks:
 ---------------
 
-.. image :: docs/0.2.0osx.PNG
+.. image :: docs/0.2.0osx.png
 
 
 Downloads
