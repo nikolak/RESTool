@@ -48,7 +48,7 @@ Screenshots
 Linux xubuntu 15.04:
 --------------------
 
-.. image :: docs/0.2.0linux.png
+.. image :: docs/0.2.0linux.jpg
 
 Windows 10:
 -----------
