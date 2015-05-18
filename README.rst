@@ -71,13 +71,13 @@ Windows
 which you probably already have installed, but if you can not get the app to run
 try installing visual c++ 2008 redistributable from the link above.
 
-You can find the latest stable build here: https://github.com/Nikola-K/RESTool/releases
+You can find the latest stable build here: http://nikola-k.github.io/RESTool/
 
 Windows Vista and up are supported. Tested on Windows 7 32bit.
 
 OS X
 ----
-Apple OS X distribution is packed as a .app package and can be downloaded here: https://github.com/Nikola-K/RESTool/releases
+Apple OS X distribution is packed as a .app package and can be downloaded here: http://nikola-k.github.io/RESTool/
 
 
 Linux
