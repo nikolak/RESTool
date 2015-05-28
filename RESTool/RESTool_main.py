@@ -17,7 +17,7 @@
 
 __author__ = 'Nikola Kovacevic'
 __email__ = 'nikolak@outlook.com'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 import os
 import sys
@@ -97,6 +97,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.config = None
         self.labelMessage.setVisible(False)
         self.lblUpdateAvailable.setVisible(False)
+        self.lblVersion.setText("Version: {}".format(__version__))
 
         self.choices_first = OrderedDict({"None": None})
         self.choices_second = OrderedDict({"None": None})

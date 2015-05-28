@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>591</width>
-    <height>472</height>
+    <height>495</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -312,6 +312,27 @@
                </widget>
               </item>
               <item>
+               <layout class="QHBoxLayout" name="VersionLayout">
+                <item>
+                 <widget class="QLabel" name="lblVersion">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version 0.2.1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="StaticLabelVersion">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Website: &lt;a href=&quot;http://nikola-k.github.io/RESTool/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;nikola-k.github.io/RESTool&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
                <spacer name="StaticDivider_2">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -323,13 +344,6 @@
                  </size>
                 </property>
                </spacer>
-              </item>
-              <item>
-               <widget class="QLabel" name="StaticLabelVersion">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version 0.2 - Website: &lt;a href=&quot;http://nikola-k.github.io/RESTool/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;nikola-k.github.io/RESTool&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
               </item>
               <item>
                <widget class="QLabel" name="lblUpdateAvailable">

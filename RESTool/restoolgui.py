@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Sun May 17 18:51:16 2015
+# Created: Thu May 28 20:46:13 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(591, 472)
+        MainWindow.resize(591, 495)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -206,11 +206,18 @@ class Ui_MainWindow(object):
         self.btnRestoreToSecond.setEnabled(False)
         self.btnRestoreToSecond.setObjectName(_fromUtf8("btnRestoreToSecond"))
         self.BackupsLayout.addWidget(self.btnRestoreToSecond)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.BackupsLayout.addItem(spacerItem)
+        self.VersionLayout = QtGui.QHBoxLayout()
+        self.VersionLayout.setObjectName(_fromUtf8("VersionLayout"))
+        self.lblVersion = QtGui.QLabel(self.BackupRestoreMigrateTab)
+        self.lblVersion.setWordWrap(True)
+        self.lblVersion.setObjectName(_fromUtf8("lblVersion"))
+        self.VersionLayout.addWidget(self.lblVersion)
         self.StaticLabelVersion = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.StaticLabelVersion.setObjectName(_fromUtf8("StaticLabelVersion"))
-        self.BackupsLayout.addWidget(self.StaticLabelVersion)
+        self.VersionLayout.addWidget(self.StaticLabelVersion)
+        self.BackupsLayout.addLayout(self.VersionLayout)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.BackupsLayout.addItem(spacerItem)
         self.lblUpdateAvailable = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.lblUpdateAvailable.setEnabled(True)
         self.lblUpdateAvailable.setAlignment(QtCore.Qt.AlignCenter)
@@ -395,7 +402,8 @@ class Ui_MainWindow(object):
         self.btnBackupSecond.setText(_translate("MainWindow", "Backup second browser", None))
         self.btnRestoreToFirst.setText(_translate("MainWindow", "Restore selected backup to the first browser", None))
         self.btnRestoreToSecond.setText(_translate("MainWindow", "Restore selected backup to the second browser", None))
-        self.StaticLabelVersion.setText(_translate("MainWindow", "<html><head/><body><p>Version 0.2 - Website: <a href=\"http://nikola-k.github.io/RESTool/\"><span style=\" text-decoration: underline; color:#0000ff;\">nikola-k.github.io/RESTool</span></a></p></body></html>", None))
+        self.lblVersion.setText(_translate("MainWindow", "<html><head/><body><p>Version 0.2.1</p></body></html>", None))
+        self.StaticLabelVersion.setText(_translate("MainWindow", "<html><head/><body><p>Website: <a href=\"http://nikola-k.github.io/RESTool/\"><span style=\" text-decoration: underline; color:#0000ff;\">nikola-k.github.io/RESTool</span></a></p></body></html>", None))
         self.lblUpdateAvailable.setText(_translate("MainWindow", "<html><head/><body><p>Update available. Visit website for more info.</p></body></html>", None))
         self.StaticLabelBackups.setText(_translate("MainWindow", "Available Backups", None))
         self.btnDeleteBackup.setText(_translate("MainWindow", "Delete Selected Backup", None))
