@@ -8,6 +8,7 @@ help:
 	@echo "build-ui - compile design.ui file to restoolgui.py using pyuic4"
 	@echo "strip-osx - remove unecessary files bundeled by py2app"
 	@echo "build-osx - build os x distributable using py2app"
+	@echo "build-win - build windows binary using pyinstaller"
 
 clean: clean-pyc
 
@@ -45,6 +46,9 @@ strip-osx:
 
 build-osx:
 	python setup.py py2app -O2 -S --qt-plugins QtCore,QtGui
+
+build-win:
+	pyinstaller .\RESTool\RESTool_main.py -F -w --noupx
 
 clean-pyc:
 	find . -name '*.pyc' -exec rm -f {} +
