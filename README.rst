@@ -71,13 +71,15 @@ Windows
 which you probably already have installed, but if you can not get the app to run
 try installing visual c++ 2008 redistributable from the link above.
 
-You can find the latest stable build here: http://nikola-k.github.io/RESTool/
+You can find the latest stable build here: http://nikola-k.github.io/RESTool/ or on the releases page https://github.com/Nikola-K/RESTool/releases
 
-Windows Vista and up are supported. Tested on Windows 7 32bit.
+Windows Vista and up are supported. Tested on Windows 7 32/64bit, and Windows 10 Technical Preview 64bit
 
 OS X
 ----
-Apple OS X distribution is packed as a .app package and can be downloaded here: http://nikola-k.github.io/RESTool/
+Apple OS X distribution is packed as a .app package and can be downloaded here: http://nikola-k.github.io/RESTool/ or the releases page https://github.com/Nikola-K/RESTool/releases
+
+Tested on OS X 10.9 Mavericks
 
 
 Linux
@@ -87,7 +89,9 @@ There is no binary provided for linux but the only requirements are Python 2.7 a
 are available in most distro repos. You can run the application, after installing pyqt, by simply downloading
 the source from releases and running `RESTool_main.py` from your command line.
 
-Tested on xubuntu 64bit.
+You can download the only necessary files to run the app on linux here: http://nikola-k.github.io/RESTool/ or the releases page https://github.com/Nikola-K/RESTool/releases
+
+Tested on xubuntu 15.04 64bit and Debian 8.
 
 Usage
 =====
