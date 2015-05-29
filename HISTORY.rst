@@ -3,6 +3,15 @@
 History
 -------
 
+0.2.1 (2015-05-28)
+------------------
+
+Fix error when converting data from firefox to sqlite database when value is a long int.
+
+Reduce Windows executable startup time by up to 80%.
+
+Fix Windows Runtime Error (R6034)
+
 0.2.0 (2015-05-17)
 ------------------
 
