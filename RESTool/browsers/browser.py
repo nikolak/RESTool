@@ -87,3 +87,11 @@ class Browser(object):
         except Exception as e:
             log.exception(e)
             return False
+
+    def is_valid_sqlite_data(self, res_data):
+        for t in res_data:
+            if not all(isinstance(i, (str, unicode, bool, int, float, long, None)) for i in t):
+                log.critical("Tuples are not valid data for the sqlite database.")
+                log.debug(t)
+                return False
+        return True

@@ -143,11 +143,10 @@ class Chromium(Browser):
             res_data = [(key, value) for key, value in json_data.items()]
             log.debug("Tuples generated. Count: {}".format(len(res_data)))
             log.debug("Checking tuple types")
-            for t in res_data:
-                if not all(isinstance(i, (str, unicode, bool, int, float, long)) for i in t):
-                    log.critical("Not all items in res_data are strings. Aborting")
-                    log.debug(t)
-                    return
+
+            if not self.is_valid_sqlite_data(res_data):
+                log.critical("Aborting setting data.")
+                return
 
             log.debug("Executing DROP TABLE")
             c.execute("DROP TABLE ItemTable;")
