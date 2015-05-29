@@ -660,7 +660,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 "portable_config": True,
                 "auto_update_check": True
             }
-            
+
         self.lneBackupFolder.setText(self.config['bak_folder'])
         self.chkAutomaticBakFolder.setChecked(self.config['sys_dir_bak'])
         self.lneBackupTimeFormat.setText(self.config['bak_format'])
