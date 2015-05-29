@@ -3,7 +3,7 @@
 History
 -------
 
-0.2.1 (2015-05-28)
+0.2.1 (2015-05-29)
 ------------------
 
 * Fix error when converting data from firefox to sqlite database when value is a long int.
