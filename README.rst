@@ -245,7 +245,6 @@ No downloads or anything else is started if update is found, only a small text i
 
 The update check does not send absolutely any private data - not even the current version or OS info.
 
-**By default this feature is disabled.**
 
 FAQs
 ====
