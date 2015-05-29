@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Fri May 29 21:30:04 2015
+# Created: Fri May 29 22:07:35 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(556, 497)
+        MainWindow.resize(556, 543)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -219,8 +219,6 @@ class Ui_MainWindow(object):
         self.StaticLabelVersion.setObjectName(_fromUtf8("StaticLabelVersion"))
         self.VersionLayout.addWidget(self.StaticLabelVersion)
         self.BackupsLayout.addLayout(self.VersionLayout)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.BackupsLayout.addItem(spacerItem)
         self.lblUpdateAvailable = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.lblUpdateAvailable.setEnabled(True)
         self.lblUpdateAvailable.setAlignment(QtCore.Qt.AlignCenter)
@@ -311,8 +309,8 @@ class Ui_MainWindow(object):
         self.chkPortableSettings.setChecked(True)
         self.chkPortableSettings.setObjectName(_fromUtf8("chkPortableSettings"))
         self.horizontalLayout_2.addWidget(self.chkPortableSettings)
-        spacerItem1 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-        self.horizontalLayout_2.addItem(spacerItem1)
+        spacerItem = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
         self.btnRemoveSystemConfig = QtGui.QPushButton(self.SettingsTab)
         self.btnRemoveSystemConfig.setObjectName(_fromUtf8("btnRemoveSystemConfig"))
         self.horizontalLayout_2.addWidget(self.btnRemoveSystemConfig)
@@ -363,8 +361,8 @@ class Ui_MainWindow(object):
         self.chkAutomaticUpdates.setObjectName(_fromUtf8("chkAutomaticUpdates"))
         self.AutomaticUpdateLayer.addWidget(self.chkAutomaticUpdates)
         self.verticalLayout_4.addLayout(self.AutomaticUpdateLayer)
-        spacerItem2 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_4.addItem(spacerItem2)
+        spacerItem1 = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_4.addItem(spacerItem1)
         self.SettingsButtonsLayout = QtGui.QHBoxLayout()
         self.SettingsButtonsLayout.setObjectName(_fromUtf8("SettingsButtonsLayout"))
         self.btnRestoreSettings = QtGui.QPushButton(self.SettingsTab)
