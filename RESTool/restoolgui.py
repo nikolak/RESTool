@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'RESTool/ui/design_v2.ui'
 #
-# Created: Thu May 28 20:46:13 2015
+# Created: Fri May 29 21:30:04 2015
 #      by: PyQt4 UI code generator 4.11.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(591, 495)
+        MainWindow.resize(556, 497)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
         self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
@@ -170,6 +170,7 @@ class Ui_MainWindow(object):
         self.ApplicationActionsLayout = QtGui.QHBoxLayout()
         self.ApplicationActionsLayout.setObjectName(_fromUtf8("ApplicationActionsLayout"))
         self.BackupsLayout = QtGui.QVBoxLayout()
+        self.BackupsLayout.setSpacing(6)
         self.BackupsLayout.setObjectName(_fromUtf8("BackupsLayout"))
         self.StaticLabelMigrating = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.StaticLabelMigrating.setObjectName(_fromUtf8("StaticLabelMigrating"))
@@ -207,6 +208,8 @@ class Ui_MainWindow(object):
         self.btnRestoreToSecond.setObjectName(_fromUtf8("btnRestoreToSecond"))
         self.BackupsLayout.addWidget(self.btnRestoreToSecond)
         self.VersionLayout = QtGui.QHBoxLayout()
+        self.VersionLayout.setSpacing(0)
+        self.VersionLayout.setContentsMargins(-1, -1, -1, 0)
         self.VersionLayout.setObjectName(_fromUtf8("VersionLayout"))
         self.lblVersion = QtGui.QLabel(self.BackupRestoreMigrateTab)
         self.lblVersion.setWordWrap(True)

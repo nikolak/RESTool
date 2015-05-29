@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>591</width>
-    <height>495</height>
+    <width>556</width>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -230,6 +230,9 @@
            <layout class="QHBoxLayout" name="ApplicationActionsLayout" stretch="60,40">
             <item>
              <layout class="QVBoxLayout" name="BackupsLayout">
+              <property name="spacing">
+               <number>6</number>
+              </property>
               <item>
                <widget class="QLabel" name="StaticLabelMigrating">
                 <property name="text">
@@ -313,6 +316,12 @@
               </item>
               <item>
                <layout class="QHBoxLayout" name="VersionLayout">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="QLabel" name="lblVersion">
                   <property name="text">
