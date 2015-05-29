@@ -663,7 +663,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 "bak_format": "%Y-%m-%d",
                 "bak_folder": "res_backups",
                 "portable_config": True,
-                "auto_update_check": False
+                "auto_update_check": True
             }
 
 
