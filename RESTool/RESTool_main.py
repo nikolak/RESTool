@@ -651,11 +651,6 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                     self.config = json.load(input_file)
                 except Exception as e:
                     log.exception(e)
-            self.lneBackupFolder.setText(self.config['bak_folder'])
-            self.chkAutomaticBakFolder.setChecked(self.config['sys_dir_bak'])
-            self.lneBackupTimeFormat.setText(self.config['bak_format'])
-            self.chkPortableSettings.setChecked(self.config['portable_config'])
-            self.chkAutomaticUpdates.setChecked(self.config['auto_update_check'])
         else:
             log.info("setting default config")
             self.config = {
@@ -665,6 +660,12 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 "portable_config": True,
                 "auto_update_check": True
             }
+            
+        self.lneBackupFolder.setText(self.config['bak_folder'])
+        self.chkAutomaticBakFolder.setChecked(self.config['sys_dir_bak'])
+        self.lneBackupTimeFormat.setText(self.config['bak_format'])
+        self.chkPortableSettings.setChecked(self.config['portable_config'])
+        self.chkAutomaticUpdates.setChecked(self.config['auto_update_check'])
 
 
 def main():
