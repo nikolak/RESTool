@@ -20,6 +20,7 @@ import os
 import platform
 import shutil
 import sqlite3
+from glob import glob
 
 from logbook import FileHandler, Logger
 
@@ -38,11 +39,63 @@ class Canary(Browser):
         self.os = platform.system().lower()
 
         self.path = None
+        self.profile = None
+        self.available_profiles = self._get_profiles()
         self.path = self._find_res()
         self.res_exists = self.path is not None
-        pass
+
+    def _get_profiles(self):
+        if self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            # todo: Check if it's possible for folder to be in %APPDATA%
+            # instead
+            profiles_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome Canary\\User Data\\")
+
+        elif self.os == "darwin":
+            profiles_folder = self._expand("~/Library/Application Support/Google/Chrome Canary/")
+
+        else:
+            log.error("Unsupported OS. Returning None")
+            return None
+
+        available_profiles = {}
+        # Check if default directory exists
+        default_profile = os.path.join(profiles_folder, "Default")
+        if os.path.exists(default_profile):
+            available_profiles['Default'] = default_profile
+            log.debug("Default profile exists")
+
+        for other_profile in glob(profiles_folder+os.sep+"Profile *"):
+            try:
+                profile_name = other_profile.split(os.sep)[-1:][0]
+            except Exception as e:
+                log.exception(e)
+            log.debug("Additional profile {} at {} exists".format(profile_name,
+                                                                    other_profile))
+            available_profiles[profile_name] = other_profile
+
+        return available_profiles
 
     def _find_res(self):
+        log.info("searching for RES")
+
+        if not self.available_profiles:
+            log.info("Profiles not found in _find_res, aborting")
+            return None
+
+        for profile_name in self.available_profiles.keys():
+            res = self._get_res(profile_name)
+
+            if res and res is not None:
+                self.profile = profile_name
+                return res
+
+        return None
+
+    def _get_res(self, profile_name):
         log.debug("searching for RES")
 
         res_file = "chrome-extension_kbmfpngjjgdllneeigpgjifpgocmfgmb_0.localstorage"
@@ -53,10 +106,10 @@ class Canary(Browser):
                 return None
 
             # todo: Check if it's possible for folder to be in %APPDATA% instead
-            res_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome Canary\\User Data\\Default\\Local Storage\\")
+            res_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome Canary\\User Data\\{}\\Local Storage\\".format(profile_name))
 
         elif self.os == "darwin":
-            res_folder = self._expand("~/Library/Application Support/Google/Chrome Canary/Default/Local Storage/")
+            res_folder = self._expand("~/Library/Application Support/Google/Chrome Canary/{}/Local Storage/".format(profile_name))
 
         else:
             log.error("Unsupported OS. Returning None")
@@ -84,6 +137,16 @@ class Canary(Browser):
             return None
         except Exception as e:
             log.exception(e)
+
+    def change_profile(self, profile_name):
+        log.info("Canary changing profile to {}".format(profile_name))
+
+        if profile_name not in self.available_profiles.keys():
+            log.debug("selected profile not in available profiles")
+            return False
+
+        self.path = self._get_res(profile_name)
+        self.res_exists = self.path is not None
 
     def get_data(self, file_path=None):
         log.debug("get_data")
