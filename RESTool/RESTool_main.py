@@ -371,16 +371,18 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         local_folder = self.config['bak_folder']
         system_folder = self.dirs.user_data_dir
         default_folder = "res_backups"
-        folders_to_check = {local_folder, system_folder, default_folder}
+        folders_to_check = [local_folder, system_folder, default_folder]
         log.debug("folders to check {}".format(folders_to_check))
         for folder in folders_to_check:
-            if folder:
+            if os.path.exists(folder):
                 try:
                     for item in os.listdir(folder):
                         if item.endswith(".resbak"):
                             self.backups[item] = os.path.join(folder, item)
                 except Exception as e:
                     log.exception(e)
+            else:
+                log.debug("{} does not exist".format(folder))
 
         for backup in self.backups.keys():
             self.listBackups.addItem(backup)
