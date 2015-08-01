@@ -43,7 +43,6 @@ class Chrome(Browser):
         self.available_profiles = self._get_profiles()
         self.path = self._find_res()
         self.res_exists = self.path is not None
-        pass
 
     def _get_profiles(self):
         if self.os == 'linux':
@@ -56,8 +55,7 @@ class Chrome(Browser):
 
             # todo: Check if it's possible for folder to be in %APPDATA%
             # instead
-            profiles_folder = self._expand(
-                "%LOCALAPPDATA%\\Google\\Chrome\\User Data\\")
+            profiles_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome\\User Data\\")
 
         elif self.os == "darwin":
             profiles_folder = self._expand("~/Library/Application Support/Google/Chrome/")
