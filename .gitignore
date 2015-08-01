@@ -107,6 +107,7 @@ log.txt
 #backups while testing
 RESTool/res_backups
 *.exe
+res_backups/*
 
 # local settings file
 settings.json
