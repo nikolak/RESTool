@@ -20,6 +20,7 @@ import os
 import platform
 import shutil
 import sqlite3
+from glob import glob
 
 from logbook import FileHandler, Logger
 
@@ -38,9 +39,45 @@ class Chrome(Browser):
         self.os = platform.system().lower()
 
         self.path = None
+        self.profile = None
+        self.available_profiles = {}
         self.path = self._find_res()
+        self._get_profiles()
         self.res_exists = self.path is not None
         pass
+
+    def _get_profiles(self):
+        if self.os == 'linux':
+            profiles_folder = self._expand("~/.config/google-chrome")
+
+        elif self.os == 'windows':
+            if platform.release() == "XP":
+                log.error("Unsupported OS (Windows XP). Returning None")
+                return None
+
+            # todo: Check if it's possible for folder to be in %APPDATA% instead
+            profiles_folder = self._expand("%LOCALAPPDATA%\\Google\\Chrome\\User Data\\")
+
+        elif self.os == "darwin":
+            profiles_folder = self._expand("~/Library/Application Support/Google/Chrome/")
+
+        else:
+            log.error("Unsupported OS. Returning None")
+            return None
+
+        # Check if default directory exists
+        default_profile = os.path.join(profiles_folder, "Default")
+        if os.path.exists(default_profile):
+            self.available_profiles['Default'] = default_profile
+
+        for other_profile in glob(profiles_folder+os.sep+"Profile *"):
+            try:
+                profile_name = other_profile.split(os.sep)[-1:][0]
+            except Exception as e:
+                log.exception(e)
+
+            self.available_profiles[profile_name]=other_profile
+
 
     def _find_res(self):
         log.debug("searching for RES")
