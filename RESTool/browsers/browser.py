@@ -89,9 +89,19 @@ class Browser(object):
             return False
 
     def is_valid_sqlite_data(self, res_data):
-        for t in res_data:
-            if not all(isinstance(i, (str, unicode, bool, int, float, long, None)) for i in t):
-                log.critical("Tuples are not valid data for the sqlite database.")
-                log.debug(t)
-                return False
+        VALID_TYPES = (str, unicode, bool, int, float, long, None)
+        for data_tuple in res_data:
+            for single_item in data_tuple:
+                try:
+                    if not isinstance(single_item, VALID_TYPES):
+                        log.critical("Item in tuple not valid type, aborting.")
+                        log.debug("Item type {}".format(type(single_item)))
+                        log.debug("Full tuple: {}".format(data_tuple))
+                        return False
+                except Exception as e:
+                    log.critical("Couldn't compare tuple...")
+                    log.debug("Item type {}".format(type(single_item)))
+                    log.debug("Full tuple: {}".format(data_tuple))
+                    log.exception(e)
+                    return False
         return True
