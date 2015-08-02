@@ -22,14 +22,16 @@ import shutil
 import sqlite3
 from glob import glob
 
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
 from browser import Browser
 
+log = Logger("Chromium")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-log = Logger("Chromium")
+else:
+    log.level = CRITICAL
 
 
 class Chromium(Browser):

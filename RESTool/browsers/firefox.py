@@ -22,14 +22,16 @@ import os
 import platform
 import shutil
 
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
 from browser import Browser
 
+log = Logger("Firefox")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-log = Logger("Firefox")
+else:
+    log.level = CRITICAL
 
 
 class Firefox(Browser):
