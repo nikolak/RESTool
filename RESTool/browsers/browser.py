@@ -89,11 +89,12 @@ class Browser(object):
             return False
 
     def is_valid_sqlite_data(self, res_data):
-        VALID_TYPES = (str, unicode, bool, int, float, long, None)
+        VALID_TYPES = (str, unicode, bool, int, float, long)
         for data_tuple in res_data:
             for single_item in data_tuple:
                 try:
-                    if not isinstance(single_item, VALID_TYPES):
+                    if not isinstance(single_item, VALID_TYPES)\
+                            and single_item is not None:
                         log.critical("Item in tuple not valid type, aborting.")
                         log.debug("Item type {}".format(type(single_item)))
                         log.debug("Full tuple: {}".format(data_tuple))
