@@ -19,8 +19,20 @@ __author__ = 'Nikola Kovacevic'
 __email__ = 'nikolak@outlook.com'
 __version__ = '0.3.0dev'
 
-import os
 import sys
+
+try:
+    from RESTool import restool_cli
+except ImportError:
+    import restool_cli
+
+
+if len(sys.argv)>1:
+    if sys.argv[1] == "cli":
+        restool_cli.execute(sys.argv[2:])
+    exit()
+
+import os
 from PyQt4 import QtGui
 import copy
 import json
@@ -45,11 +57,6 @@ try:
     from RESTool import restoolgui
 except ImportError:
     import restoolgui
-
-try:
-    from RESTool import restool_cli
-except ImportError:
-    import restool_cli
 
 
 class checkUpdatesThread(QThread):
@@ -680,8 +687,4 @@ def main():
 
 
 if __name__ == '__main__':
-    if len(sys.argv)>1:
-        if sys.argv[1] == "cli":
-            restool_cli.execute(sys.argv[2:])
-    else:
-        main()
+    main()
