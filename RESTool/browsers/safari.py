@@ -21,14 +21,16 @@ import platform
 import shutil
 import sqlite3
 
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
 from browser import Browser
 
+log = Logger("Safari")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-log = Logger("Safari")
+else:
+    log.level = CRITICAL
 
 
 class Safari(Browser):

@@ -19,12 +19,14 @@ import shutil
 from uuid import uuid4
 from time import strftime
 
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
+log = Logger("Browser")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-log = Logger("Browser")
+else:
+    log.level = CRITICAL
 
 
 class Browser(object):

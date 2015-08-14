@@ -46,16 +46,9 @@ setup(
     },
     app=['RESTool/RESTool_main.py'],
     windows=['RESTool/RESTool_main.py'],
-    options={"py2exe":{
-            "dll_excludes": ["MSVCP90.dll", "HID.DLL", "w9xpopen.exe"],
-            'bundle_files': 1,
-            "includes":["sip"],
-            "compressed": 1,
-            "optimize": 1,
-            },
-            'py2app': {
-            'argv_emulation': True
-            }
+    options={'py2app': {
+        'argv_emulation': True
+    }
     },
     include_package_data=True,
     install_requires=requirements,

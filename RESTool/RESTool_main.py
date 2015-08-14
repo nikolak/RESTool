@@ -30,17 +30,14 @@ import urllib
 
 from PyQt4.QtCore import QThread, SIGNAL
 from appdirs import AppDirs
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
+log = Logger("Main Qt")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-else:  # py2exe otherwise shows annoying popup if there's something in stderr
-    err = sys.stderr
-    out = sys.stdout
-    sys.stderr = out
-
-log = Logger("Main Qt")
+else:
+    log.level = CRITICAL
 
 from browsers import Chrome, Firefox, Safari, Chromium, Canary
 
@@ -48,6 +45,11 @@ try:
     from RESTool import restoolgui
 except ImportError:
     import restoolgui
+
+try:
+    from RESTool import restool_cli
+except ImportError:
+    import restool_cli
 
 
 class checkUpdatesThread(QThread):
@@ -678,4 +680,8 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv)>1:
+        if sys.argv[1] == "cli":
+            restool_cli.execute(sys.argv[2:])
+    else:
+        main()
