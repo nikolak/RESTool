@@ -39,6 +39,7 @@ import webbrowser
 from collections import OrderedDict
 import urllib
 import platform
+import arrow
 
 from PyQt4.QtCore import QThread, SIGNAL
 from appdirs import AppDirs
@@ -393,8 +394,17 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             else:
                 log.debug("{} does not exist".format(folder))
 
-        for backup in self.backups.keys():
-            self.listBackups.addItem(backup)
+        backup_names = self.backups.keys()
+        backups_date_dict = {}
+        for backup in backup_names:
+            backup_date = backup.split('.')[1:2][0]
+            backups_date_dict[backup]=arrow.get(backup_date)
+
+
+        for backup_name in sorted(backups_date_dict,
+                                  key=backups_date_dict.get,
+                                  reverse=True):
+            self.listBackups.addItem(backup_name)
 
     def _delete_backup(self):
         try:
