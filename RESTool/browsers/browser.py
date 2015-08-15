@@ -117,7 +117,8 @@ class Browser(object):
             except psutil.NoSuchProcess:
                 pass
             else:
-                if self.process_name == pinfo['name']:
-                    return True
+                for process_name in self.process_names:
+                    if process_name == pinfo['name'].lower():
+                        return True
 
         return False
