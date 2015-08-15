@@ -19,6 +19,7 @@ import shutil
 from uuid import uuid4
 from time import strftime
 import psutil
+from types import NoneType
 
 from logbook import FileHandler, Logger, CRITICAL
 
@@ -92,12 +93,11 @@ class Browser(object):
             return False
 
     def is_valid_sqlite_data(self, res_data):
-        VALID_TYPES = (str, unicode, bool, int, float, long)
+        VALID_TYPES = (str, unicode, bool, int, float, long, NoneType)
         for data_tuple in res_data:
             for single_item in data_tuple:
                 try:
-                    if not isinstance(single_item, VALID_TYPES)\
-                            and single_item is not None:
+                    if not isinstance(single_item, VALID_TYPES):
                         log.critical("Item in tuple not valid type, aborting.")
                         log.debug("Item type {}".format(type(single_item)))
                         log.debug("Full tuple: {}".format(data_tuple))
