@@ -38,6 +38,7 @@ import json
 import webbrowser
 from collections import OrderedDict
 import urllib
+import platform
 
 from PyQt4.QtCore import QThread, SIGNAL
 from appdirs import AppDirs
@@ -531,8 +532,8 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         do_restore = True
         if self.first_browser.is_running:
             do_restore = self._prompt(msg="It seems like the first browser is running. "
-                                            "This could lead to failed restoration."
-                                            "Are you sure you want to continue?")
+                                          "This could lead to failed restoration."
+                                          "Are you sure you want to continue?")
         if do_restore:
             self.__restore(self.first_browser)
         else:
@@ -542,12 +543,13 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         do_restore = True
         if self.second_browser.is_running:
             do_restore = self._prompt(msg="It seems like the first browser is running. "
-                                            "This could lead to failed restoration."
-                                            "Are you sure you want to continue?")
+                                          "This could lead to failed restoration."
+                                          "Are you sure you want to continue?")
         if do_restore:
             self.__restore(self.second_browser)
         else:
             self._info(msg="Aborting restore.")
+
     # Settings Tab
 
     def browse_backup_folder(self):
@@ -596,10 +598,12 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         message_body = "Issue description:%0D%0A" \
                        "How to reproduce:%0D%0A" \
                        "Operating systems and/or browsers affected:%0D%0A" \
-                       "RESTool version:%0D%0A" \
-                       "Operating System version:%0D%0A" \
+                       "RESTool version:{ver}%0D%0A" \
+                       "Operating System version:{platform}%0D%0A" \
                        "----------------------------%0D%0A" \
-                       "Attach a log file if possible."
+                       "Attach a log file if possible.".format(ver=__version__,
+                                                               platform=platform.platform()
+                                                               )
 
         if github_prompt is None:  # Cancel
             return
