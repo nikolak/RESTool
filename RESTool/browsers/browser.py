@@ -18,6 +18,7 @@ import platform
 import shutil
 from uuid import uuid4
 from time import strftime
+import psutil
 
 from logbook import FileHandler, Logger, CRITICAL
 
@@ -108,3 +109,16 @@ class Browser(object):
                     log.exception(e)
                     return False
         return True
+
+    def is_running(self):
+        for proc in psutil.process_iter():
+            try:
+                pinfo = proc.as_dict(attrs=['pid', 'name'])
+            except psutil.NoSuchProcess:
+                pass
+            else:
+                for process_name in self.process_names:
+                    if process_name == pinfo['name'].lower():
+                        return True
+
+        return False

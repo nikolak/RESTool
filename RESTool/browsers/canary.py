@@ -38,6 +38,7 @@ class Canary(Browser):
     def __init__(self):
         log.debug("Starting initialization")
         self.name = "canary"
+        self.process_names = ["chrome"]
         self.os = platform.system().lower()
 
         self.path = None

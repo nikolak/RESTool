@@ -38,6 +38,7 @@ class Chromium(Browser):
     def __init__(self):
         log.debug("Starting initialization")
         self.name = "chromium"
+        self.process_names = ["chromium-browser"]
         self.os = platform.system().lower()
 
         self.path = None

@@ -37,6 +37,7 @@ class Safari(Browser):
     def __init__(self):
         log.debug("Starting initialization")
         self.name = "safari"
+        self.process_names = ['safari']
         self.os = platform.system().lower()
 
         self.path = None
