@@ -111,6 +111,7 @@ class Browser(object):
         return True
 
     def is_running(self):
+        log.debug("Checking if {} is running".format(self.name))
         for proc in psutil.process_iter():
             try:
                 pinfo = proc.as_dict(attrs=['pid', 'name'])
@@ -119,6 +120,9 @@ class Browser(object):
             else:
                 for process_name in self.process_names:
                     if process_name == pinfo['name'].lower():
+                        log.debug("{} is running process name {} found".format(
+                            self.name, process_name
+                        ))
                         return True
-
+        log.debug("{} is not running.".format(self.name))
         return False
