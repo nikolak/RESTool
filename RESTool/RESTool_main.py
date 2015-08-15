@@ -26,8 +26,7 @@ try:
 except ImportError:
     import restool_cli
 
-
-if len(sys.argv)>1:
+if len(sys.argv) > 1:
     if sys.argv[1] == "cli":
         restool_cli.execute(sys.argv[2:])
     exit()
@@ -115,9 +114,9 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         self.second_browser = None
 
         self.all_browsers = {"firefox": Firefox,
-                             "chrome": Chrome,
-                             "safari": Safari,
-                             "canary": Canary}
+                             "chrome" : Chrome,
+                             "safari" : Safari,
+                             "canary" : Canary}
         self.backups = {}
 
         self.cboFirstBrowser.currentIndexChanged.connect(self._first_browser_changed)
@@ -331,7 +330,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         if type(self.first_browser) == type(self.second_browser):
             if str(self.cboFirstBrowserProfile.currentText()) == \
-                    str(self.cboSecondBrowserProfile.currentText()):
+                str(self.cboSecondBrowserProfile.currentText()):
                 self._show_warning_label("Pick different browsers and/or profiles!")
                 self.btnBackupFirst.setEnabled(False)
                 self.btnBackupSecond.setEnabled(False)
@@ -345,7 +344,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self.labelMessage.setVisible(False)
 
         if (self.first_browser and not self.second_browser) or \
-                (self.first_browser.res_exists and not self.second_browser.res_exists):
+            (self.first_browser.res_exists and not self.second_browser.res_exists):
             self.btnBackupFirst.setEnabled(True)
             self.btnRestoreToFirst.setEnabled(True)
 
@@ -356,7 +355,7 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             return
 
         if (self.second_browser and not self.first_browser) or \
-                (self.second_browser.res_exists and not self.first_browser.res_exists):
+            (self.second_browser.res_exists and not self.first_browser.res_exists):
             self.btnBackupSecond.setEnabled(True)
             self.btnRestoreToSecond.setEnabled(True)
 
@@ -437,10 +436,26 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
                 self._warn("Migrating data from {} to {} failed.".format(from_name, to_name))
 
     def migrate_first_to_second(self):
-        self.__migrate(self.first_browser, self.second_browser)
+        do_migration = True
+        if self.second_browser.is_running:
+            do_migration = self._prompt(msg="It seems like the second browser is running. "
+                                            "All changes will most likely not be applied."
+                                            "Are you sure you want to continue?")
+        if do_migration:
+            self.__migrate(self.first_browser, self.second_browser)
+        else:
+            self._info(msg="Migration canceled.")
 
     def migrate_second_to_first(self):
-        self.__migrate(self.second_browser, self.first_browser)
+        do_migration = True
+        if self.first_browser.is_running:
+            do_migration = self._prompt(msg="It seems like the first browser is running. "
+                                            "All changes will most likely not be applied."
+                                            "Are you sure you want to continue?")
+        if do_migration:
+            self.__migrate(self.second_browser, self.first_browser)
+        else:
+            self._info(msg="Migration canceled.")
 
     def __backup(self, browser):
         log.info("Backing up {}".format(browser.name))
@@ -456,13 +471,21 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         if browser.backup(bak_dir, time_f):
             self._update_backups_list()
+            self._info("Backing up done successfully!")
         else:
             self._warn("Backing up failed.")
 
     def backup_first(self):
+        if self.first_browser.is_running:
+            self._warn(msg="It looks like the browser you're trying to back up is running. "
+                           "To make sure the backup includes the latest data please close the browser.")
         self.__backup(self.first_browser)
 
     def backup_second(self):
+        if self.second_browser.is_running:
+            self._warn(msg="It looks like the browser you're trying to back up is running. "
+                           "To make sure the backup includes the latest data please close the browser.")
+
         self.__backup(self.second_browser)
 
     def __restore(self, browser):
@@ -505,11 +528,26 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
             self._warn("Unknown backup format.")
 
     def restore_to_first(self):
-        self.__restore(self.first_browser)
+        do_restore = True
+        if self.first_browser.is_running:
+            do_restore = self._prompt(msg="It seems like the first browser is running. "
+                                            "This could lead to failed restoration."
+                                            "Are you sure you want to continue?")
+        if do_restore:
+            self.__restore(self.first_browser)
+        else:
+            self._info(msg="Aborting restore.")
 
     def restore_to_second(self):
-        self.__restore(self.second_browser)
-
+        do_restore = True
+        if self.second_browser.is_running:
+            do_restore = self._prompt(msg="It seems like the first browser is running. "
+                                            "This could lead to failed restoration."
+                                            "Are you sure you want to continue?")
+        if do_restore:
+            self.__restore(self.second_browser)
+        else:
+            self._info(msg="Aborting restore.")
     # Settings Tab
 
     def browse_backup_folder(self):
@@ -592,10 +630,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
 
         log.info("saving file to {}".format(config_file))
 
-        config = {"bak_folder": str(self.lneBackupFolder.text()),
-                  "sys_dir_bak": self.chkAutomaticBakFolder.isChecked(),
-                  "bak_format": str(self.lneBackupTimeFormat.text()),
-                  "portable_config": self.chkPortableSettings.isChecked(),
+        config = {"bak_folder"       : str(self.lneBackupFolder.text()),
+                  "sys_dir_bak"      : self.chkAutomaticBakFolder.isChecked(),
+                  "bak_format"       : str(self.lneBackupTimeFormat.text()),
+                  "portable_config"  : self.chkPortableSettings.isChecked(),
                   "auto_update_check": self.chkAutomaticUpdates.isChecked()
                   }
 
@@ -665,10 +703,10 @@ class RESToolUI(QtGui.QMainWindow, restoolgui.Ui_MainWindow):
         else:
             log.info("setting default config")
             self.config = {
-                "sys_dir_bak": False,
-                "bak_format": "%Y-%m-%d",
-                "bak_folder": "res_backups",
-                "portable_config": True,
+                "sys_dir_bak"      : False,
+                "bak_format"       : "%Y-%m-%d",
+                "bak_folder"       : "res_backups",
+                "portable_config"  : True,
                 "auto_update_check": True
             }
 
