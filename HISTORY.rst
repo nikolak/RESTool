@@ -3,6 +3,21 @@
 History
 -------
 
+0.3.0dev (TBD)
+--------------
+
+* Command line interface for automating tasks using cron or windows task scheduler
+
+* Fixed a bug where converting data to chrome would fail
+
+* Improved checks that verify that the data provided is valid
+
+* Added checks that notify the user if one of the selected browsers is running
+
+* Added profile support for Google Chrome and Google Canary
+
+* Code cleanup
+
 0.2.1 (2015-05-29)
 ------------------
 
