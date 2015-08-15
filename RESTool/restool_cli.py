@@ -24,6 +24,7 @@ import time
 from browsers import Chrome, Chromium, Firefox, Safari, Canary
 import json
 from appdirs import AppDirs
+import arrow
 
 log = Logger("CLI")
 
@@ -147,7 +148,7 @@ class CommandLine(object):
         all_files = glob.glob(self.backup_folder + os.sep + "*.resbak")
         for backup in all_files:
             date_string = backup.split('.')[-3:][:-2][0]
-            backup_datetime = time.strptime(date_string, self.date_format)
+            backup_datetime = arrow.get(date_string)
             self.backups[backup_datetime] = backup
 
     def _list_backups(self):
