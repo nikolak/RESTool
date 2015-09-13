@@ -38,7 +38,7 @@ class Chrome(Browser):
     def __init__(self):
         log.debug("Starting initialization")
         self.name = "chrome"
-        self.process_name = "chrome"
+        self.process_names = ["chrome", "chrome.exe"]
         self.os = platform.system().lower()
 
         self.path = None

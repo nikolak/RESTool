@@ -38,7 +38,7 @@ class Firefox(Browser):
     def __init__(self):
         log.info("Initialization starting")
         self.name = "firefox"
-        self.process_names = ['firefox']
+        self.process_names = ['firefox', 'firefox.exe']
         self.os = platform.system().lower()
 
         self.path = None
