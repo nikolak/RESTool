@@ -57,7 +57,7 @@ setup(
     zipfile=None,
     keywords='RESTool',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Intended Audience :: End Users/Desktop',

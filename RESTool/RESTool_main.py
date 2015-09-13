@@ -17,7 +17,7 @@
 
 __author__ = 'Nikola Kovacevic'
 __email__ = 'nikolak@outlook.com'
-__version__ = '0.3.0dev'
+__version__ = '0.3.0'
 
 import sys
 
