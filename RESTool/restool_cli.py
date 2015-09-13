@@ -189,14 +189,13 @@ class CommandLine(object):
             restore_data = restore_browser.get_data(restore_path)
             browser.set_data(restore_data)
 
-def execute(cli_args):
+if __name__ == '__main__':
     if os.path.exists("application.log"):
         log_handler = FileHandler('application.log')
         log_handler.push_application()
     else:
         log.level = CRITICAL
 
-    args = None
     parser = argparse.ArgumentParser(prog='RESTool Command Line Interface. '
                                           'See github for usage examples.')
     parser.add_argument('-l', '--list', action='store_true',
@@ -223,11 +222,7 @@ def execute(cli_args):
     parser.add_argument('-d', '--debug', action='store_true',
                         help="Create log file for debugging.")
 
-    if cli_args:
-        args = parser.parse_args(cli_args)
-    else:
-        parser.print_help()
-        exit()
+    args = parser.parse_args()
 
     if args.debug:
         with open("application.log", "w") as _:
@@ -256,3 +251,5 @@ def execute(cli_args):
             print "You need to specify which browser to restore to"
             exit()
         app.restore(args.browser, args.profile, args.restore)
+    else:
+        parser.print_help()
