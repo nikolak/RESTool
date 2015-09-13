@@ -3,7 +3,7 @@
 History
 -------
 
-0.3.0dev (TBD)
+0.3.0 (2015-09-13)
 --------------
 
 * Command line interface for automating tasks using cron or windows task scheduler
