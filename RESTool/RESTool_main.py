@@ -21,17 +21,6 @@ __version__ = '0.3.0'
 
 import sys
 
-try:
-    from RESTool import restool_cli
-except ImportError:
-    import restool_cli
-
-if len(sys.argv) > 1:
-    if sys.argv[1] == "cli":
-        restool_cli.execute(sys.argv[2:])
-    print sys.arv
-    exit()
-
 import os
 from PyQt4 import QtGui
 import copy
