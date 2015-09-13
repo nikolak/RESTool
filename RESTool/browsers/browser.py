@@ -18,13 +18,17 @@ import platform
 import shutil
 from uuid import uuid4
 from time import strftime
+import psutil
+from types import NoneType
 
-from logbook import FileHandler, Logger
+from logbook import FileHandler, Logger, CRITICAL
 
+log = Logger("Browser")
 if os.path.exists("application.log"):
     log_handler = FileHandler('application.log')
     log_handler.push_application()
-log = Logger("Browser")
+else:
+    log.level = CRITICAL
 
 
 class Browser(object):
@@ -89,9 +93,36 @@ class Browser(object):
             return False
 
     def is_valid_sqlite_data(self, res_data):
-        for t in res_data:
-            if not all(isinstance(i, (str, unicode, bool, int, float, long, None)) for i in t):
-                log.critical("Tuples are not valid data for the sqlite database.")
-                log.debug(t)
-                return False
+        VALID_TYPES = (str, unicode, bool, int, float, long, NoneType)
+        for data_tuple in res_data:
+            for single_item in data_tuple:
+                try:
+                    if not isinstance(single_item, VALID_TYPES):
+                        log.critical("Item in tuple not valid type, aborting.")
+                        log.debug("Item type {}".format(type(single_item)))
+                        log.debug("Full tuple: {}".format(data_tuple))
+                        return False
+                except Exception as e:
+                    log.critical("Couldn't compare tuple...")
+                    log.debug("Item type {}".format(type(single_item)))
+                    log.debug("Full tuple: {}".format(data_tuple))
+                    log.exception(e)
+                    return False
         return True
+
+    def is_running(self):
+        log.debug("Checking if {} is running".format(self.name))
+        for proc in psutil.process_iter():
+            try:
+                pinfo = proc.as_dict(attrs=['pid', 'name'])
+            except psutil.NoSuchProcess:
+                pass
+            else:
+                for process_name in self.process_names:
+                    if process_name == pinfo['name'].lower():
+                        log.debug("{} is running process name {} found".format(
+                            self.name, process_name
+                        ))
+                        return True
+        log.debug("{} is not running.".format(self.name))
+        return False
