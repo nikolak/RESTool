@@ -42,6 +42,8 @@ Features
 
 * Simple to use GUI (see screenshot below)
 
+* Command line interface for easier automation.
+
 Screenshots
 ===========
 

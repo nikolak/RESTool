@@ -18,6 +18,8 @@ History
 
 * Code cleanup
 
+* Backups list is now sorted from latest to oldest
+
 0.2.1 (2015-05-29)
 ------------------
 
