@@ -2,6 +2,17 @@
 RESTool
 =======
 
+THIS PROJECT IS DISCONTINUED
+============================
+
+**AS OF RES 4.6 IMPORT/EXPORT IS SUPPORTED NATIVELY**
+
+Unless that changes there will be no updates to this project, however it should still work even with newer RES versions since it reads/writes raw data.
+And the RES Settings location should stay the same through the versions.
+
+Original text below:
+--------------------
+
 **For stable release please see download link below, the current master branch is for development only and may be broken and lead to loss of data!**
 
 Unofficial cross platform tool for migrating between browsers, backing up, and restoring from backups,
